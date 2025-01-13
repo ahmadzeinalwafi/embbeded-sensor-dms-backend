@@ -1,4 +1,3 @@
-// config/config.go
 package config
 
 import (
@@ -9,11 +8,13 @@ import (
 
 func LoadConfig() *viper.Viper {
 	config := viper.New()
-
 	config.SetConfigFile("config.env")
 	config.AddConfigPath(".")
-
+	config.AutomaticEnv()
 	err := config.ReadInConfig()
+
+	log.Printf("Loaded config: %+v", config.AllSettings())
+
 	if err != nil {
 		log.Fatalf("Error reading config file: %v", err)
 	}
