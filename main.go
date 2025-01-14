@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"golang_api/database"
+	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
 	"log"
 )
 
 func main() {
-	db := database.GetConnection()
+	db := MySQLConnector.GetConnection()
 	defer db.Close()
 
 	rows, err := db.Query("SELECT id, created_at, user_id, device_id FROM user_devices")
