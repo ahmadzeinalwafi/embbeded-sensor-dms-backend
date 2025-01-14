@@ -21,31 +21,41 @@ func TestCommentInsert(t *testing.T) {
 
 	result, err := userDeviceRepository.Insert(ctx, user_device)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error inserting user device: %v", err))
 	}
-	fmt.Println(result)
+	fmt.Printf("Inserted user device: %+v\n", result)
 }
 
 func TestFindByUserId(t *testing.T) {
 	userDeviceRepository := NewUserDeviceRepository(MySQLConnector.GetConnection())
 
-	user_device, err := userDeviceRepository.FindById(context.Background(), "alpha01")
+	user_device, err := userDeviceRepository.FindByUserId(context.Background(), "alpha01")
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error finding user by ID: %v", err))
 	}
 
-	fmt.Println(user_device)
+	fmt.Printf("Found user device: %+v\n", user_device)
 }
 
 func TestFindAll(t *testing.T) {
 	userDeviceRepository := NewUserDeviceRepository(MySQLConnector.GetConnection())
 
-	user_device, err := userDeviceRepository.FindAll(context.Background(), 5)
+	user_devices, err := userDeviceRepository.FindAll(context.Background(), 5)
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Error finding all user devices: %v", err))
 	}
 
-	for _, comment := range user_device {
-		fmt.Println(comment)
+	for _, user_device := range user_devices {
+		fmt.Printf("User device: %+v\n", user_device)
 	}
+}
+
+func TestDeleteBySensorId(t *testing.T) {
+	userDeviceRepository := NewUserDeviceRepository(MySQLConnector.GetConnection())
+
+	err := userDeviceRepository.DeleteBySensorId(context.Background(), "alpha01")
+	if err != nil {
+		panic(fmt.Sprintf("Error deleting user device: %v", err))
+	}
+	fmt.Println("Deleted user device successfully")
 }
