@@ -10,7 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func TestCommentInsert(t *testing.T) {
+func TestUserDeviceInsert(t *testing.T) {
 	userDeviceRepository := NewUserDeviceRepository(MySQLConnector.GetConnection())
 
 	ctx := context.Background()
