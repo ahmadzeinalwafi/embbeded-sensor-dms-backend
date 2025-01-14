@@ -9,15 +9,14 @@ import (
 	"golang_api/internal/infrastructure/database/mongodb"
 )
 
-// Test for inserting a sensor
 func TestSensorInsert(t *testing.T) {
 	client := mongodb.MongoDBConnector()
 	defer client.Disconnect(context.Background())
 
-	sensorRepo := NewSensorRepository(client, "sensor_data", "sensors")
+	sensorRepo := NewDeviceConfigRepository(client, "sensor_data", "sensors")
 
-	sensor := &entity.SensorConfig{
-		SensorID: "12345",
+	device_config := &entity.DeviceConfig{
+		Device_Id: "12345",
 		Fields: map[string]interface{}{
 			"temperature_celcius": "float32",
 			"humidity":            "int8",
@@ -25,47 +24,47 @@ func TestSensorInsert(t *testing.T) {
 	}
 
 	// Insert sensor data into MongoDB
-	err := sensorRepo.Insert(context.Background(), sensor)
+	err := sensorRepo.Insert(context.Background(), device_config)
 	if err != nil {
-		t.Fatalf("Error inserting sensor: %v", err)
+		t.Fatalf("Error inserting device configuration: %v", err)
 	}
-	fmt.Printf("Inserted sensor: %+v\n", sensor)
+	fmt.Printf("Inserted device configuration: %+v\n", device_config)
 }
 
 func TestFindBySensorID(t *testing.T) {
 	client := mongodb.MongoDBConnector()
 	defer client.Disconnect(context.Background())
 
-	sensorRepo := NewSensorRepository(client, "sensor_data", "sensors")
+	sensorRepo := NewDeviceConfigRepository(client, "sensor_data", "sensors")
 
-	foundSensor, err := sensorRepo.FindByID(context.Background(), "12345")
+	found_device_config, err := sensorRepo.FindByDeviceId(context.Background(), "12345")
 	if err != nil {
 		t.Fatalf("Error finding sensor: %v", err)
 	}
-	if foundSensor == nil {
-		t.Fatalf("Sensor not found")
+	if found_device_config == nil {
+		t.Fatalf("Device configuration not found")
 	}
 
-	fmt.Printf("Found sensor: %+v\n", foundSensor)
+	fmt.Printf("Found device configuration: %+v\n", found_device_config)
 }
 
 func TestDeleteByDeviceId(t *testing.T) {
 	client := mongodb.MongoDBConnector()
 	defer client.Disconnect(context.Background())
 
-	repo := NewSensorRepository(client, "sensor_data", "sensors")
+	repo := NewDeviceConfigRepository(client, "sensor_data", "sensors")
 
 	err := repo.DeleteByDeviceId(context.Background(), "12345")
 	if err != nil {
-		t.Fatalf("Error deleting sensor by sensorid: %v", err)
+		t.Fatalf("Error deleting device configuration by device id: %v", err)
 	}
-	fmt.Println("Successfully deleted sensor with sensorid 12345")
+	fmt.Println("Successfully deleted device configuration by device id 12345")
 
-	deletedSensor, err := repo.FindByID(context.Background(), "12345")
+	deletedSensor, err := repo.FindByDeviceId(context.Background(), "12345")
 	if err != nil {
-		t.Fatalf("Error finding sensor after deletion: %v", err)
+		t.Fatalf("Error finding device after deletion: %v", err)
 	}
 	if deletedSensor != nil {
-		t.Fatalf("Sensor was not deleted")
+		t.Fatalf("Device configuration was not deleted")
 	}
 }

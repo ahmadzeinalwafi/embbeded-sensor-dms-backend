@@ -4,60 +4,55 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	repository "golang_api/internal/domain/device_config"
 	entity "golang_api/internal/domain/device_config/entities"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// MongoDB implementation of the SensorRepository
-type SensorRepositoryImpl struct {
+type DeviceConfigRepositoryImpl struct {
 	client     *mongo.Client
 	collection *mongo.Collection
 }
 
-// NewSensorRepository creates a new instance of SensorRepositoryImpl
-func NewSensorRepository(client *mongo.Client, dbName, collectionName string) *SensorRepositoryImpl {
+func NewDeviceConfigRepository(client *mongo.Client, dbName, collectionName string) repository.DeviceConfigRepository {
 	collection := client.Database(dbName).Collection(collectionName)
-	return &SensorRepositoryImpl{
+	return &DeviceConfigRepositoryImpl{
 		client:     client,
 		collection: collection,
 	}
 }
 
-// Insert saves a sensor to the database
-func (r *SensorRepositoryImpl) Insert(ctx context.Context, sensor *entity.SensorConfig) error {
-	_, err := r.collection.InsertOne(ctx, sensor)
+func (r *DeviceConfigRepositoryImpl) Insert(ctx context.Context, device_config *entity.DeviceConfig) error {
+	_, err := r.collection.InsertOne(ctx, device_config)
 	if err != nil {
-		return fmt.Errorf("error inserting sensor: %v", err)
+		return fmt.Errorf("error inserting device configuration: %v", err)
 	}
 	return nil
 }
 
-// FindByID retrieves a sensor by its sensorID
-func (r *SensorRepositoryImpl) FindByID(ctx context.Context, sensorID string) (*entity.SensorConfig, error) {
-	var sensor entity.SensorConfig
-	err := r.collection.FindOne(ctx, bson.M{"sensorid": sensorID}).Decode(&sensor)
+func (r *DeviceConfigRepositoryImpl) FindByDeviceId(ctx context.Context, device_id string) (*entity.DeviceConfig, error) {
+	var sensor entity.DeviceConfig
+	err := r.collection.FindOne(ctx, bson.M{"device_id": device_id}).Decode(&sensor)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, nil // Not found
+			return nil, nil
 		}
-		return nil, fmt.Errorf("error finding sensor: %v", err)
+		return nil, fmt.Errorf("error finding device configuration: %v", err)
 	}
 	return &sensor, nil
 }
 
-// DeleteByDeviceId deletes a sensor document by its Device_Id
-func (r *SensorRepositoryImpl) DeleteByDeviceId(ctx context.Context, deviceID string) error {
-	// Use `sensorid` as the identifier field
-	filter := bson.M{"sensorid": deviceID}
+func (r *DeviceConfigRepositoryImpl) DeleteByDeviceId(ctx context.Context, device_id string) error {
+	filter := bson.M{"device_id": device_id}
 
 	result, err := r.collection.DeleteMany(ctx, filter)
 	if err != nil {
 		return err
 	}
 	if result.DeletedCount == 0 {
-		return errors.New("no document found with the given sensorid")
+		return errors.New("no document found with the given device id")
 	}
 	return nil
 }

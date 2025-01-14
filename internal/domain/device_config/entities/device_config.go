@@ -1,6 +1,6 @@
 package entity
 
-type SensorConfig struct {
-	SensorID string
-	Fields   map[string]interface{}
+type DeviceConfig struct {
+	Device_Id string
+	Fields    map[string]interface{}
 }
