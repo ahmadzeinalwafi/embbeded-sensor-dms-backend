@@ -8,4 +8,5 @@ import (
 type SensorRepository interface {
 	Insert(ctx context.Context, sensor *entity.SensorConfig) error
 	FindByID(ctx context.Context, sensorID string) (*entity.SensorConfig, error)
+	DeleteByDeviceId(ctx context.Context, deviceID string) error
 }

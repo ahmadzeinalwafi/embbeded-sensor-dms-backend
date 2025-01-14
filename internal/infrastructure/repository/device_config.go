@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	entity "golang_api/internal/domain/device_config/entities"
 
@@ -44,4 +45,19 @@ func (r *SensorRepositoryImpl) FindByID(ctx context.Context, sensorID string) (*
 		return nil, fmt.Errorf("error finding sensor: %v", err)
 	}
 	return &sensor, nil
+}
+
+// DeleteByDeviceId deletes a sensor document by its Device_Id
+func (r *SensorRepositoryImpl) DeleteByDeviceId(ctx context.Context, deviceID string) error {
+	// Use `sensorid` as the identifier field
+	filter := bson.M{"sensorid": deviceID}
+
+	result, err := r.collection.DeleteMany(ctx, filter)
+	if err != nil {
+		return err
+	}
+	if result.DeletedCount == 0 {
+		return errors.New("no document found with the given sensorid")
+	}
+	return nil
 }

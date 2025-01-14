@@ -48,3 +48,24 @@ func TestFindBySensorID(t *testing.T) {
 
 	fmt.Printf("Found sensor: %+v\n", foundSensor)
 }
+
+func TestDeleteByDeviceId(t *testing.T) {
+	client := mongodb.MongoDBConnector()
+	defer client.Disconnect(context.Background())
+
+	repo := NewSensorRepository(client, "sensor_data", "sensors")
+
+	err := repo.DeleteByDeviceId(context.Background(), "12345")
+	if err != nil {
+		t.Fatalf("Error deleting sensor by sensorid: %v", err)
+	}
+	fmt.Println("Successfully deleted sensor with sensorid 12345")
+
+	deletedSensor, err := repo.FindByID(context.Background(), "12345")
+	if err != nil {
+		t.Fatalf("Error finding sensor after deletion: %v", err)
+	}
+	if deletedSensor != nil {
+		t.Fatalf("Sensor was not deleted")
+	}
+}
