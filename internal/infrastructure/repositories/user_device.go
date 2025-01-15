@@ -1,4 +1,4 @@
-package repository
+package repositories
 
 import (
 	"context"
@@ -30,20 +30,30 @@ func (repository *userDevicesRepositoryImpl) Insert(ctx context.Context, user_de
 	return user_device, nil
 }
 
-func (repository *userDevicesRepositoryImpl) FindByUserId(ctx context.Context, id string) (entity.UserDevice, error) {
-	script := "SELECT id, created_at, user_id, device_id FROM user_devices WHERE user_id = ? LIMIT 1"
+func (repository *userDevicesRepositoryImpl) FindByUserId(ctx context.Context, id string) ([]entity.UserDevice, error) {
+	script := "SELECT id, created_at, user_id, device_id FROM user_devices WHERE user_id = ?"
 	rows, err := repository.DB.QueryContext(ctx, script, id)
-	user_device := entity.UserDevice{}
 	if err != nil {
-		return user_device, err
+		return nil, err
 	}
 	defer rows.Close()
-	if rows.Next() {
-		rows.Scan(&user_device.Id, &user_device.User_Id, &user_device.Device_Id)
-		return user_device, nil
-	} else {
-		return user_device, errors.New("Id " + id + " Not Found")
+
+	var userDevices []entity.UserDevice
+	// Loop through the rows and collect them into a slice
+	for rows.Next() {
+		var user_device entity.UserDevice
+		// Add error handling for rows.Scan
+		if err := rows.Scan(&user_device.Id, &user_device.Created_At, &user_device.User_Id, &user_device.Device_Id); err != nil {
+			return nil, err
+		}
+		userDevices = append(userDevices, user_device)
 	}
+
+	if len(userDevices) == 0 {
+		return nil, errors.New("No devices found for user ID " + id)
+	}
+
+	return userDevices, nil
 }
 
 func (repository *userDevicesRepositoryImpl) FindAll(ctx context.Context, limit int32) ([]entity.UserDevice, error) {

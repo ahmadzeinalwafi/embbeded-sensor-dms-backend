@@ -1,31 +1,26 @@
 package main
 
 import (
-	"fmt"
-	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
+	usecase "golang_api/internal/application/usecases"
+	// MySQLConnector "golang_api/internal/infrastructure/database/mysql"
+	"golang_api/internal/interface/http/router"
 	"log"
+	"net/http"
 )
 
 func main() {
-	db := MySQLConnector.GetConnection()
-	defer db.Close()
+	// Establish database connection
+	// db := MySQLConnector.GetConnection()
 
-	rows, err := db.Query("SELECT id, created_at, user_id, device_id FROM user_devices")
-	if err != nil {
-		log.Fatalf("Query failed: %v", err)
-	}
-	defer rows.Close()
+	// Initialize the use case
+	deviceService := usecase.NewDeviceUseCase()
 
-	for rows.Next() {
-		var id int
-		var created_at, user_id, device_id string
-		if err := rows.Scan(&id, &created_at, &user_id, &device_id); err != nil {
-			log.Fatalf("Error scanning row: %v", err)
-		}
-		fmt.Printf("ID: %d, CreatedAt: %s, User: %s, Devices: %s\n", id, created_at, user_id, device_id)
-	}
+	// Setup router
+	mux := router.SetupRouter(deviceService)
 
-	if err := rows.Err(); err != nil {
-		log.Fatalf("Error during row iteration: %v", err)
+	// Start the server
+	log.Println("Server started on :8888")
+	if err := http.ListenAndServe(":8888", mux); err != nil {
+		log.Fatalf("Server failed: %v", err)
 	}
 }
