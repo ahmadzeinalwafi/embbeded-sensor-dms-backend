@@ -2,7 +2,7 @@ package main
 
 import (
 	usecase "golang_api/internal/application/usecases"
-	// MySQLConnector "golang_api/internal/infrastructure/database/mysql"
+	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
 	"golang_api/internal/interface/http/router"
 	"log"
 	"net/http"
@@ -10,10 +10,10 @@ import (
 
 func main() {
 	// Establish database connection
-	// db := MySQLConnector.GetConnection()
+	db := MySQLConnector.GetConnection()
 
 	// Initialize the use case
-	deviceService := usecase.NewDeviceUseCase()
+	deviceService := usecase.NewDeviceUseCase(db)
 
 	// Setup router
 	mux := router.SetupRouter(deviceService)

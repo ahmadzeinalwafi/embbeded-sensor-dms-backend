@@ -2,22 +2,23 @@ package usecase
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"golang_api/internal/application/contracts"
 	entity "golang_api/internal/domain/user_device/entities"
-	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
 	"golang_api/internal/infrastructure/repositories"
 )
 
 type deviceContractImpl struct {
+	DB *sql.DB
 }
 
-func NewDeviceUseCase() contracts.DeviceServiceContract {
-	return &deviceContractImpl{}
+func NewDeviceUseCase(db *sql.DB) contracts.DeviceServiceContract {
+	return &deviceContractImpl{DB: db}
 }
 
 func (repository *deviceContractImpl) CreateDevice(ctx context.Context, user_device contracts.EnteredDeviceInformation) (contracts.EnteredDeviceInformation, error) {
-	userDeviceRepository := repositories.NewUserDeviceRepository(MySQLConnector.GetConnection())
+	userDeviceRepository := repositories.NewUserDeviceRepository(repository.DB)
 	newEntities := entity.UserDevice{
 		User_Id:   user_device.DeviceName,
 		Device_Id: user_device.Location,
@@ -32,7 +33,7 @@ func (repository *deviceContractImpl) CreateDevice(ctx context.Context, user_dev
 }
 
 func (repository *deviceContractImpl) GetUserDevices(ctx context.Context, user_id string) ([]contracts.DeviceInformation, error) {
-	userDeviceRepository := repositories.NewUserDeviceRepository(MySQLConnector.GetConnection())
+	userDeviceRepository := repositories.NewUserDeviceRepository(repository.DB)
 	userDevices, err := userDeviceRepository.FindByUserId(ctx, user_id)
 
 	if err != nil {
