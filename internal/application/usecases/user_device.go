@@ -2,42 +2,41 @@ package usecase
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"golang_api/internal/application/contracts"
+	repository "golang_api/internal/domain/user_device"
 	entity "golang_api/internal/domain/user_device/entities"
-	"golang_api/internal/infrastructure/repositories"
 )
 
 type deviceContractImpl struct {
-	DB *sql.DB
+	repo repository.UserDeviceRepository
 }
 
-func NewDeviceUseCase(db *sql.DB) contracts.DeviceServiceContract {
-	return &deviceContractImpl{DB: db}
+func NewDeviceUseCase(repo repository.UserDeviceRepository) contracts.DeviceServiceContract {
+	return &deviceContractImpl{
+		repo: repo,
+	}
 }
 
-func (repository *deviceContractImpl) CreateDevice(ctx context.Context, user_device contracts.EnteredDeviceInformation) (contracts.EnteredDeviceInformation, error) {
-	userDeviceRepository := repositories.NewUserDeviceRepository(repository.DB)
+func (u *deviceContractImpl) CreateDevice(ctx context.Context, user_device contracts.EnteredDeviceInformation) (contracts.EnteredDeviceInformation, error) {
 	newEntities := entity.UserDevice{
 		User_Id:   user_device.DeviceName,
 		Device_Id: user_device.Location,
 	}
+	_, err := u.repo.Insert(ctx, newEntities)
 
-	_, err := userDeviceRepository.Insert(ctx, newEntities)
 	if err != nil {
-		panic(fmt.Sprintf("Error finding user by ID: %v", err))
+		panic(fmt.Sprintf("Error when creating device: %v", err))
 	}
 
 	return user_device, nil
 }
 
-func (repository *deviceContractImpl) GetUserDevices(ctx context.Context, user_id string) ([]contracts.DeviceInformation, error) {
-	userDeviceRepository := repositories.NewUserDeviceRepository(repository.DB)
-	userDevices, err := userDeviceRepository.FindByUserId(ctx, user_id)
+func (u *deviceContractImpl) GetUserDevices(ctx context.Context, user_id string) ([]contracts.DeviceInformation, error) {
+	userDevices, err := u.repo.FindByUserId(ctx, user_id)
 
 	if err != nil {
-		panic(fmt.Sprintf("Error finding user by ID: %v", err))
+		panic(fmt.Sprintf("Error when getting the device data by user id: %v", err))
 	}
 
 	var deviceInfos []contracts.DeviceInformation
