@@ -1,12 +1,12 @@
 package router
 
 import (
-	"golang_api/internal/application/contracts"
+	event "golang_api/internal/domain/events"
 	"golang_api/internal/interface/http/handler"
 	"net/http"
 )
 
-func SetupRouter(deviceService contracts.DeviceServiceContract) *http.ServeMux {
+func SetupRouter(deviceService event.DeviceService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	deviceHandler := handler.NewDeviceHandler(deviceService)

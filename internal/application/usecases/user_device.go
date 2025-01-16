@@ -3,22 +3,23 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"golang_api/internal/application/contracts"
-	entity "golang_api/internal/domain/entities"
+	event "golang_api/internal/domain/events"
+	aggregate "golang_api/internal/domain/aggregates"
 	repository "golang_api/internal/domain/repositories"
+	entity "golang_api/internal/domain/entities"
 )
 
 type deviceContractImpl struct {
 	repo repository.UserDeviceRepository
 }
 
-func NewDeviceUseCase(repo repository.UserDeviceRepository) contracts.DeviceServiceContract {
+func NewDeviceUseCase(repo repository.UserDeviceRepository) event.DeviceService {
 	return &deviceContractImpl{
 		repo: repo,
 	}
 }
 
-func (u *deviceContractImpl) CreateDevice(ctx context.Context, user_device contracts.EnteredDeviceInformation) (contracts.EnteredDeviceInformation, error) {
+func (u *deviceContractImpl) CreateDevice(ctx context.Context, user_device aggregate.EnteredDeviceInformation) (aggregate.EnteredDeviceInformation, error) {
 	newEntities := entity.UserDevice{
 		User_Id:   user_device.DeviceName,
 		Device_Id: user_device.Location,
@@ -32,17 +33,17 @@ func (u *deviceContractImpl) CreateDevice(ctx context.Context, user_device contr
 	return user_device, nil
 }
 
-func (u *deviceContractImpl) GetUserDevices(ctx context.Context, user_id string) ([]contracts.DeviceInformation, error) {
+func (u *deviceContractImpl) GetUserDevices(ctx context.Context, user_id string) ([]aggregate.DeviceInformation, error) {
 	userDevices, err := u.repo.FindByUserId(ctx, user_id)
 
 	if err != nil {
 		panic(fmt.Sprintf("Error when getting the device data by user id: %v", err))
 	}
 
-	var deviceInfos []contracts.DeviceInformation
+	var deviceInfos []aggregate.DeviceInformation
 
 	for _, userDevice := range userDevices {
-		deviceInfo := contracts.DeviceInformation{
+		deviceInfo := aggregate.DeviceInformation{
 			DeviceId:   userDevice.Device_Id,
 			Created_At: userDevice.Created_At,
 			User_Id:    userDevice.User_Id,

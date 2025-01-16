@@ -4,22 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"golang_api/internal/application/contracts"
+	aggregate "golang_api/internal/domain/aggregates"
+	event "golang_api/internal/domain/events"
 	"net/http"
 )
 
 type DeviceHandler struct {
-	DeviceService contracts.DeviceServiceContract
+	DeviceService event.DeviceService
 }
 
-func NewDeviceHandler(deviceService contracts.DeviceServiceContract) *DeviceHandler {
+func NewDeviceHandler(deviceService event.DeviceService) *DeviceHandler {
 	return &DeviceHandler{
 		DeviceService: deviceService,
 	}
 }
 
 func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
-	var userDevice contracts.EnteredDeviceInformation
+	var userDevice aggregate.EnteredDeviceInformation
 
 	if err := json.NewDecoder(r.Body).Decode(&userDevice); err != nil {
 		http.Error(w, fmt.Sprintf("Error decoding request body: %v", err), http.StatusBadRequest)
