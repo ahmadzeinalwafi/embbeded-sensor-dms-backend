@@ -1,10 +1,10 @@
-package repositories
+package repository
 
 import (
 	"context"
 	"fmt"
-	repository "golang_api/internal/domain/historical_device_records"
-	entity "golang_api/internal/domain/historical_device_records/entities"
+	entity "golang_api/internal/domain/entities"
+	repository "golang_api/internal/domain/repositories"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -19,7 +19,7 @@ type HistoricalDeviceRecordsRepositoryImpl struct {
 	organization string
 }
 
-func NewHistoricalDeviceRecordsRepository(client influxdb2.Client, bucket, organization string) repository.DeviceConfigRepository {
+func NewHistoricalDeviceRecordsRepository(client influxdb2.Client, bucket, organization string) repository.HistoricalDeviceRecordsRepository {
 	return &HistoricalDeviceRecordsRepositoryImpl{
 		client:       client,
 		writeAPI:     client.WriteAPIBlocking(organization, bucket),

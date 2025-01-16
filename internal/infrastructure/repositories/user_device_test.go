@@ -1,9 +1,9 @@
-package repositories
+package repository
 
 import (
 	"context"
 	"fmt"
-	entity "golang_api/internal/domain/user_device/entities"
+	entity "golang_api/internal/domain/entities"
 	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
 	"testing"
 

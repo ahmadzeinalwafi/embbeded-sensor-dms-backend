@@ -1,11 +1,11 @@
-package repositories
+package repository
 
 import (
 	"context"
 	"errors"
 	"fmt"
-	repository "golang_api/internal/domain/device_config"
-	entity "golang_api/internal/domain/device_config/entities"
+	entity "golang_api/internal/domain/entities"
+	repository "golang_api/internal/domain/repositories"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

@@ -1,11 +1,11 @@
-package repositories
+package repository
 
 import (
 	"context"
 	"fmt"
 	"testing"
 
-	entity "golang_api/internal/domain/device_config/entities"
+	entity "golang_api/internal/domain/entities"
 	"golang_api/internal/infrastructure/database/mongodb"
 )
 
@@ -23,7 +23,6 @@ func TestSensorInsert(t *testing.T) {
 		},
 	}
 
-	// Insert sensor data into MongoDB
 	err := sensorRepo.Insert(context.Background(), device_config)
 	if err != nil {
 		t.Fatalf("Error inserting device configuration: %v", err)

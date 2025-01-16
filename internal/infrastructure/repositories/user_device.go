@@ -1,11 +1,11 @@
-package repositories
+package repository
 
 import (
 	"context"
 	"database/sql"
 	"errors"
-	repository "golang_api/internal/domain/user_device"
-	entity "golang_api/internal/domain/user_device/entities"
+	entity "golang_api/internal/domain/entities"
+	repository "golang_api/internal/domain/repositories"
 )
 
 type userDevicesRepositoryImpl struct {

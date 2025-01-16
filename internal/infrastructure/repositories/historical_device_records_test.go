@@ -1,10 +1,10 @@
-package repositories
+package repository
 
 import (
 	"context"
 	"testing"
 
-	entity "golang_api/internal/domain/historical_device_records/entities"
+	entity "golang_api/internal/domain/entities"
 	"golang_api/internal/infrastructure/database/influxdb"
 )
 

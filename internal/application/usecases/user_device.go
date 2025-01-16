@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"golang_api/internal/application/contracts"
-	repository "golang_api/internal/domain/user_device"
-	entity "golang_api/internal/domain/user_device/entities"
+	entity "golang_api/internal/domain/entities"
+	repository "golang_api/internal/domain/repositories"
 )
 
 type deviceContractImpl struct {

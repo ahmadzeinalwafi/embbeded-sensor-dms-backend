@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	entity "golang_api/internal/domain/user_device/entities"
+	entity "golang_api/internal/domain/entities"
 )
 
 type UserDeviceRepository interface {

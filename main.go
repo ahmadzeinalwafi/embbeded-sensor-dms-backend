@@ -3,7 +3,7 @@ package main
 import (
 	usecase "golang_api/internal/application/usecases"
 	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
-	"golang_api/internal/infrastructure/repositories"
+	repository "golang_api/internal/infrastructure/repositories"
 	"golang_api/internal/interface/http/router"
 	"log"
 	"net/http"
@@ -14,7 +14,7 @@ func main() {
 	db := MySQLConnector.GetConnection()
 
 	// Initialize repository
-	userDeviceRepository := repositories.NewUserDeviceRepository(db)
+	userDeviceRepository := repository.NewUserDeviceRepository(db)
 
 	// Initialize use case
 	deviceService := usecase.NewDeviceUseCase(userDeviceRepository)
