@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	aggregate "golang_api/internal/domain/aggregates"
 	event "golang_api/internal/domain/events"
+	tools "golang_api/tools"
 	"net/http"
 )
 
@@ -22,10 +22,9 @@ func NewDeviceHandler(deviceService event.DeviceService) *DeviceHandler {
 func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	var userDevice aggregate.EnteredDeviceInformation
 
-	if err := json.NewDecoder(r.Body).Decode(&userDevice); err != nil {
-		http.Error(w, fmt.Sprintf("Error decoding request body: %v", err), http.StatusBadRequest)
-		return
-	}
+    if !tools.DecodeJSONRequest(w, r, &userDevice) {
+        return
+    }
 
 	createdDevice, err := h.DeviceService.CreateDevice(context.Background(), userDevice)
 	if err != nil {
@@ -33,8 +32,7 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(createdDevice)
+	tools.EncodeJSONResponse(w, createdDevice, http.StatusCreated)
 }
 
 func (h *DeviceHandler) GetUserDevices(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +48,5 @@ func (h *DeviceHandler) GetUserDevices(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(devices)
+	tools.EncodeJSONResponse(w, devices, http.StatusOK)
 }
