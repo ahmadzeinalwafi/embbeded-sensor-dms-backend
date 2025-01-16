@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	entity "golang_api/internal/domain/entities"
-	"golang_api/internal/infrastructure/database/mongodb"
+	entity "dms/internal/domain/entities"
+	"dms/internal/infrastructure/database/mongodb"
 )
 
 func TestSensorInsert(t *testing.T) {

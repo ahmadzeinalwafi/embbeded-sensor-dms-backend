@@ -2,11 +2,11 @@ package usecase
 
 import (
 	"context"
+	aggregate "dms/internal/domain/aggregates"
+	entity "dms/internal/domain/entities"
+	event "dms/internal/domain/events"
+	repository "dms/internal/domain/repositories"
 	"fmt"
-	event "golang_api/internal/domain/events"
-	aggregate "golang_api/internal/domain/aggregates"
-	repository "golang_api/internal/domain/repositories"
-	entity "golang_api/internal/domain/entities"
 )
 
 type deviceContractImpl struct {

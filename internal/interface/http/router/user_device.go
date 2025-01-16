@@ -1,8 +1,8 @@
 package router
 
 import (
-	event "golang_api/internal/domain/events"
-	"golang_api/internal/interface/http/handler"
+	event "dms/internal/domain/events"
+	"dms/internal/interface/http/handler"
 	"net/http"
 )
 

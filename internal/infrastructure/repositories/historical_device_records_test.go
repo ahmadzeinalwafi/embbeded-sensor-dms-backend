@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	entity "golang_api/internal/domain/entities"
-	"golang_api/internal/infrastructure/database/influxdb"
+	entity "dms/internal/domain/entities"
+	"dms/internal/infrastructure/database/influxdb"
 )
 
 func TestCreateMeasurementHistoricalDeviceRecordsRepository(t *testing.T) {

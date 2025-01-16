@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
+	entity "dms/internal/domain/entities"
+	MySQLConnector "dms/internal/infrastructure/database/mysql"
 	"fmt"
-	entity "golang_api/internal/domain/entities"
-	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"

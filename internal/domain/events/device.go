@@ -2,7 +2,7 @@ package event
 
 import (
 	"context"
-	aggregate "golang_api/internal/domain/aggregates"
+	aggregate "dms/internal/domain/aggregates"
 )
 
 type DeviceService interface {

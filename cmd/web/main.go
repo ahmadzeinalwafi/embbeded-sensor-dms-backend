@@ -1,10 +1,10 @@
 package main
 
 import (
-	usecase "golang_api/internal/application/usecases"
-	MySQLConnector "golang_api/internal/infrastructure/database/mysql"
-	repository "golang_api/internal/infrastructure/repositories"
-	"golang_api/internal/interface/http/router"
+	usecase "dms/internal/application/usecases"
+	MySQLConnector "dms/internal/infrastructure/database/mysql"
+	repository "dms/internal/infrastructure/repositories"
+	"dms/internal/interface/http/router"
 	"log"
 	"net/http"
 )

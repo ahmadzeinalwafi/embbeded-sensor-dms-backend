@@ -1,4 +1,4 @@
-module golang_api
+module dms
 
 go 1.21.3
 

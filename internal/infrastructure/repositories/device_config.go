@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
+	entity "dms/internal/domain/entities"
+	repository "dms/internal/domain/repositories"
 	"errors"
 	"fmt"
-	entity "golang_api/internal/domain/entities"
-	repository "golang_api/internal/domain/repositories"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

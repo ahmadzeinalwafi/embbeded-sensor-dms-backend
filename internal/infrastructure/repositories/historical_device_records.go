@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
+	entity "dms/internal/domain/entities"
+	repository "dms/internal/domain/repositories"
 	"fmt"
-	entity "golang_api/internal/domain/entities"
-	repository "golang_api/internal/domain/repositories"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"

@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	entity "dms/internal/domain/entities"
+	repository "dms/internal/domain/repositories"
 	"errors"
-	entity "golang_api/internal/domain/entities"
-	repository "golang_api/internal/domain/repositories"
 )
 
 type userDevicesRepositoryImpl struct {

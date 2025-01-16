@@ -2,7 +2,7 @@ package MySQLConnector
 
 import (
 	"database/sql"
-	"golang_api/config"
+	"dms/config"
 	"log"
 	"time"
 

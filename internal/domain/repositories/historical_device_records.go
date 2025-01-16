@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	entity "golang_api/internal/domain/entities"
+	entity "dms/internal/domain/entities"
 )
 
 type HistoricalDeviceRecordsRepository interface {

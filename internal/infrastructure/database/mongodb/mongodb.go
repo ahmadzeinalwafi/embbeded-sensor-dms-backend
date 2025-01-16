@@ -2,8 +2,8 @@ package mongodb
 
 import (
 	"context"
+	"dms/config"
 	"fmt"
-	"golang_api/config"
 	"log"
 
 	"go.mongodb.org/mongo-driver/mongo"
