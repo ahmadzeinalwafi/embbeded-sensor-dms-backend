@@ -2,10 +2,10 @@ package handler
 
 import (
 	"context"
+	aggregate "dms/internal/domain/aggregates"
+	event "dms/internal/domain/events"
+	tools "dms/tools"
 	"fmt"
-	aggregate "golang_api/internal/domain/aggregates"
-	event "golang_api/internal/domain/events"
-	tools "golang_api/tools"
 	"net/http"
 )
 
