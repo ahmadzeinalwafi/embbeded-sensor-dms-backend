@@ -21,7 +21,7 @@ func LoadConfig() *viper.Viper {
 	log.Printf("Current working directory: %s", cwd)
 
 	// Set the path to the config file relative to the root (adjust the number of "..")
-	configPath := filepath.Join(cwd, "../..", "config.env")
+	configPath := filepath.Join(cwd, "../../..", "config.env")
 
 	// Check if the config file exists
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
