@@ -4,6 +4,7 @@ import (
 	usecase "dms/internal/application/usecases"
 	MySQLConnector "dms/internal/infrastructure/database/mysql"
 	repository "dms/internal/infrastructure/repositories"
+	"dms/internal/interface/http/handler"
 	"dms/internal/interface/http/router"
 	"log"
 	"net/http"
@@ -13,14 +14,24 @@ func main() {
 	// Establish database connection
 	db := MySQLConnector.GetConnection()
 
-	// Initialize repository
+	// Initialize repositories
 	userDeviceRepository := repository.NewUserDeviceRepository(db)
+	userRepository := repository.NewUserRepository(db)
 
-	// Initialize use case
+	// Initialize use cases
 	deviceService := usecase.NewDeviceUseCase(userDeviceRepository)
+	userService := usecase.NewUserUseCase(userRepository)
 
-	// Setup router
-	mux := router.SetupRouter(deviceService)
+	// Initialize handlers
+	deviceHandler := handler.NewDeviceHandler(deviceService)
+	userHandler := handler.NewUserHandler(userService)
+
+	// Setup base router
+	mux := router.NewRouter()
+
+	// Add route groups
+	router.AddDeviceRoutes(mux, deviceHandler)
+	router.AddUserRoutes(mux, userHandler)
 
 	// Start the server
 	log.Println("Server started on :8888")
