@@ -36,26 +36,48 @@ func (repository *UserRepositoryImpl) Insert(ctx context.Context, user entity.Us
 	return user, nil
 }
 
-func (repository *UserRepositoryImpl) FindById(ctx context.Context, user_id string) (entity.User, error) {
+func (repository *UserRepositoryImpl) FindByUserId(ctx context.Context, user_id string) (entity.User, error) {
 	script := "SELECT user_id, name, email, password_hash, created_at FROM users WHERE user_id = ? LIMIT 1"
-	var user_device entity.User
+	var user entity.User
 
 	// Use QueryRowContext to fetch a single record
 	err := repository.DB.QueryRowContext(ctx, script, user_id).Scan(
-		&user_device.User_Id,
-		&user_device.Name,
-		&user_device.Email,
-		&user_device.Password_Hash,
-		&user_device.Created_At,
+		&user.User_Id,
+		&user.Name,
+		&user.Email,
+		&user.Password_Hash,
+		&user.Created_At,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user_device, errors.New("no user found with id " + user_id)
+			return user, errors.New("no user found with id " + user_id)
 		}
-		return user_device, err
+		return user, err
 	}
 
-	return user_device, nil
+	return user, nil
+}
+
+func (repository *UserRepositoryImpl) FindByEmail(ctx context.Context, email string) (entity.User, error) {
+	script := "SELECT user_id, name, email, password_hash, created_at FROM users WHERE email = ? LIMIT 1"
+	var user entity.User
+
+	// Use QueryRowContext to fetch a single record
+	err := repository.DB.QueryRowContext(ctx, script, email).Scan(
+		&user.User_Id,
+		&user.Name,
+		&user.Email,
+		&user.Password_Hash,
+		&user.Created_At,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return user, errors.New("no user found with email " + email)
+		}
+		return user, err
+	}
+
+	return user, nil
 }
 
 func (repository *UserRepositoryImpl) DeleteById(ctx context.Context, user_id string) error {

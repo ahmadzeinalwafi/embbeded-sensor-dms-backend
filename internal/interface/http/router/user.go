@@ -9,6 +9,7 @@ import (
 // AddUserRoutes adds user-related routes to the provided router.
 func AddUserRoutes(router *httprouter.Router, userHandler *handler.UserHandler) {
 	router.POST("/users", WrapHandler(userHandler.CreateUser))
+	router.POST("/auth/token", WrapHandler(userHandler.GetUserToken))
 	router.GET("/users/info", WrapHandler(userHandler.GetUserInfo))
 	router.DELETE("/users", WrapHandler(userHandler.DeleteUser))
 }

@@ -9,5 +9,6 @@ import (
 type UserService interface {
 	CreateUser(ctx context.Context, user aggregate.EnteredUserInformation) (entity.User, error)
 	GetUserInfo(ctx context.Context, user_id string) (aggregate.UserInformation, error)
-	DeleteUserById(ctx context.Context, user_id string) (error)
+	GetUserToken(ctx context.Context, credential aggregate.UserCredential) (aggregate.AuthUserInformation, error)
+	DeleteUserById(ctx context.Context, user_id string) error
 }

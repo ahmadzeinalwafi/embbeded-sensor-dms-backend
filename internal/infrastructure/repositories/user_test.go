@@ -21,10 +21,10 @@ func TestUserRepository_Insert(t *testing.T) {
 
 	ctx := context.Background()
 	user := entity.User{
-		User_Id:        "test_user_01",
-		Name:           "Test User",
-		Email:          "testuser@example.com",
-		Password_Hash:  "hashed_password",
+		User_Id:       "test_user_01",
+		Name:          "Test User",
+		Email:         "testuser@example.com",
+		Password_Hash: "hashed_password",
 	}
 
 	result, err := userRepository.Insert(ctx, user)
@@ -43,7 +43,7 @@ func TestUserRepository_FindById(t *testing.T) {
 	ctx := context.Background()
 	testUserID := "test_user_01"
 
-	userDevice, err := userRepository.FindById(ctx, testUserID)
+	userDevice, err := userRepository.FindByUserId(ctx, testUserID)
 	if err != nil {
 		t.Fatalf("Error finding user by ID: %v", err)
 	}
@@ -68,7 +68,7 @@ func TestUserRepository_DeleteById(t *testing.T) {
 	fmt.Println("Deleted user successfully")
 
 	// Verify the user was deleted
-	_, err = userRepository.FindById(ctx, testUserID)
+	_, err = userRepository.FindByUserId(ctx, testUserID)
 	if err == nil {
 		t.Error("Expected error when finding deleted user, but got none")
 	} else {

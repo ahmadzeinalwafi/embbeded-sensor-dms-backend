@@ -8,12 +8,11 @@ import (
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
 	"fmt"
-
-	"github.com/go-playground/validator/v10"
 )
 
 type userContractImpl struct {
 	repo repository.UserRepository
+
 }
 
 func NewUserUseCase(repo repository.UserRepository) event.UserService {
@@ -22,14 +21,7 @@ func NewUserUseCase(repo repository.UserRepository) event.UserService {
 	}
 }
 
-// CreateUser implements the logic for creating a new user.
 func (u *userContractImpl) CreateUser(ctx context.Context, user aggregate.EnteredUserInformation) (entity.User, error) {
-	validate := validator.New()
-	err := validate.Struct(user)
-	if err != nil {
-		return entity.User{}, fmt.Errorf("invalid user input: %w", err)
-	}
-
 	hashed_password, err := tools.HashPassword(user.Password)
 	if err != nil {
 		panic(err)
@@ -50,13 +42,12 @@ func (u *userContractImpl) CreateUser(ctx context.Context, user aggregate.Entere
 	return newUserEntity, nil
 }
 
-// GetUserInfo fetches user details by user ID.
 func (u *userContractImpl) GetUserInfo(ctx context.Context, user_id string) (aggregate.UserInformation, error) {
 	if user_id == "" {
 		return aggregate.UserInformation{}, fmt.Errorf("user ID cannot be empty")
 	}
 
-	userEntity, err := u.repo.FindById(ctx, user_id)
+	userEntity, err := u.repo.FindByUserId(ctx, user_id)
 	if err != nil {
 		return aggregate.UserInformation{}, fmt.Errorf("error when fetching user information: %w", err)
 	}
@@ -69,7 +60,31 @@ func (u *userContractImpl) GetUserInfo(ctx context.Context, user_id string) (agg
 	}, nil
 }
 
-// DeleteUserById deletes a user by their ID.
+func (u *userContractImpl) GetUserToken(ctx context.Context, credential aggregate.UserCredential) (aggregate.AuthUserInformation, error) {
+	userEntity, err := u.repo.FindByEmail(ctx, credential.Email)
+	if err != nil {
+		return aggregate.AuthUserInformation{}, fmt.Errorf("fetching user info: %w", err)
+	}
+
+	if status, err := tools.VerifyPassword(credential.Password, userEntity.Password_Hash); err != nil {
+		return aggregate.AuthUserInformation{}, fmt.Errorf("error when verify password: %w", err)
+	} else if !status {
+		return aggregate.AuthUserInformation{}, fmt.Errorf("wrong password")
+	}
+
+	token, err := tools.GenerateToken(userEntity.User_Id, userEntity.Email)
+	if err != nil {
+		return aggregate.AuthUserInformation{}, fmt.Errorf("generate token: %w", err)
+	}
+
+	return aggregate.AuthUserInformation{
+		User_Id: userEntity.User_Id,
+		Name:    userEntity.Name,
+		Email:   userEntity.Email,
+		Token:   token,
+	}, nil
+}
+
 func (u *userContractImpl) DeleteUserById(ctx context.Context, user_id string) error {
 	if user_id == "" {
 		return fmt.Errorf("user ID cannot be empty")

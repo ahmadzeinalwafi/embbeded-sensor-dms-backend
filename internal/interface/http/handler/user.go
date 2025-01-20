@@ -61,6 +61,28 @@ func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, userInfo, http.StatusOK)
 }
 
+func (h *UserHandler) GetUserToken(w http.ResponseWriter, r *http.Request) {
+	var userCredentials aggregate.UserCredential
+
+	if !tools.DecodeJSONRequest(w, r, &userCredentials) {
+		return
+	}
+
+	if err := h.Validator.Struct(userCredentials); err != nil {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
+	userToken, err := h.UserService.GetUserToken(context.Background(), userCredentials)
+
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error get user token: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	tools.EncodeJSONResponse(w, userToken, http.StatusOK)
+}
+
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
 
