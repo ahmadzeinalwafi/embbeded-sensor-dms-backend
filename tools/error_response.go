@@ -17,13 +17,13 @@ type ErrorResponse struct {
 
 // SendErrorResponse sends a structured error response in JSON format
 func SendErrorResponse(w http.ResponseWriter, r *http.Request, status int, errorType string, message string) {
-	errorResponse := ErrorResponse{
+	errorResponse := map[string]interface{}{"errors": ErrorResponse{
 		Timestamp: time.Now().Format(time.RFC3339),
 		Status:    status,
 		Error:     errorType,
 		Message:   message,
 		Path:      r.URL.Path,
-	}
+	}}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)

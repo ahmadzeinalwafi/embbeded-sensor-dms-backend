@@ -40,7 +40,7 @@ func EncodeJSONResponse(w http.ResponseWriter, data interface{}, statusCode int)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode) // Set the response status code
 
-	if err := json.NewEncoder(w).Encode(data); err != nil {
+	if err := json.NewEncoder(w).Encode(map[string]interface{}{"data": data}); err != nil {
 		http.Error(w, "Error encoding response: "+err.Error(), http.StatusInternalServerError)
 	}
 }
