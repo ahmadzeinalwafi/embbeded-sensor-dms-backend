@@ -2,13 +2,14 @@ package usecase
 
 import (
 	"context"
-	"github.com/go-playground/validator/v10"
 	aggregate "dms/internal/domain/aggregates"
 	entity "dms/internal/domain/entities"
 	event "dms/internal/domain/events"
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
 	"fmt"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type userContractImpl struct {
@@ -29,11 +30,16 @@ func (u *userContractImpl) CreateUser(ctx context.Context, user aggregate.Entere
 		return entity.User{}, fmt.Errorf("invalid user input: %w", err)
 	}
 
+	hashed_password, err := tools.HashPassword(user.Password)
+	if err != nil {
+		panic(err)
+	}
+
 	newUserEntity := entity.User{
 		User_Id:       tools.GenerateShortID(),
 		Name:          user.Name,
 		Email:         user.Email,
-		Password_Hash: user.Password_Hash,
+		Password_Hash: hashed_password,
 	}
 
 	_, err = u.repo.Insert(ctx, newUserEntity)

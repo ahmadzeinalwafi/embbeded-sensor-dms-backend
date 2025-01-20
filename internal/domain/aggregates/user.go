@@ -5,7 +5,7 @@ import "time"
 type EnteredUserInformation struct {
 	Name          string `validate:"required"`
 	Email         string `validate:"required,email"`
-	Password_Hash string `validate:"required"`
+	Password string `validate:"required"`
 }
 
 type UserInformation struct {
