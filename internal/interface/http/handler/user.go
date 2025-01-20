@@ -7,15 +7,19 @@ import (
 	tools "dms/tools"
 	"fmt"
 	"net/http"
+
+	"github.com/go-playground/validator/v10"
 )
 
 type UserHandler struct {
 	UserService event.UserService
+	Validator   *validator.Validate
 }
 
 func NewUserHandler(userService event.UserService) *UserHandler {
 	return &UserHandler{
 		UserService: userService,
+		Validator:   validator.New(),
 	}
 }
 
@@ -26,9 +30,14 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := h.Validator.Struct(userInfo); err != nil {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
 	createdUser, err := h.UserService.CreateUser(context.Background(), userInfo)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error creating user: %v", err), http.StatusInternalServerError)
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error creating user", fmt.Sprintf("Error creating user: %v", err))
 		return
 	}
 
@@ -37,8 +46,9 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
+
 	if userID == "" {
-		http.Error(w, "Missing user_id parameter", http.StatusBadRequest)
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")
 		return
 	}
 
@@ -53,8 +63,9 @@ func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userID := r.URL.Query().Get("user_id")
+
 	if userID == "" {
-		http.Error(w, "Missing user_id parameter", http.StatusBadRequest)
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")
 		return
 	}
 

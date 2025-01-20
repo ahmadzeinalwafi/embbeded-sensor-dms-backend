@@ -3,14 +3,14 @@ package aggregate
 import "time"
 
 type EnteredUserInformation struct {
-	Name          string
-	Email         string
-	Password_Hash string
+	Name          string `validate:"required"`
+	Email         string `validate:"required,email"`
+	Password_Hash string `validate:"required"`
 }
 
 type UserInformation struct {
-	User_Id       string
-	Name          string
-	Email         string
-	Created_At    time.Time
+	User_Id    string
+	Name       string
+	Email      string
+	Created_At time.Time
 }
