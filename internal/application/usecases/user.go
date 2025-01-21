@@ -8,6 +8,7 @@ import (
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
 	"fmt"
+	"time"
 )
 
 type userContractImpl struct {
@@ -72,7 +73,7 @@ func (u *userContractImpl) GetUserToken(ctx context.Context, credential aggregat
 		return aggregate.AuthUserInformation{}, fmt.Errorf("wrong password")
 	}
 
-	token, err := tools.GenerateToken(userEntity.User_Id, userEntity.Email)
+	token, err := tools.GenerateToken(userEntity.User_Id, userEntity.Email, 1 * time.Hour)
 	if err != nil {
 		return aggregate.AuthUserInformation{}, fmt.Errorf("generate token: %w", err)
 	}

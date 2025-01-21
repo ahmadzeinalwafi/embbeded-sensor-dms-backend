@@ -17,9 +17,10 @@ func main() {
 	// Initialize repositories
 	userDeviceRepository := repository.NewUserDeviceRepository(db)
 	userRepository := repository.NewUserRepository(db)
+	deviceRepository := repository.NewDeviceRepository(db)
 
 	// Initialize use cases
-	deviceService := usecase.NewDeviceUseCase(userDeviceRepository)
+	deviceService := usecase.NewDeviceUseCase(deviceRepository, userDeviceRepository)
 	userService := usecase.NewUserUseCase(userRepository)
 
 	// Initialize handlers

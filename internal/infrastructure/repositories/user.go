@@ -62,7 +62,6 @@ func (repository *UserRepositoryImpl) FindByEmail(ctx context.Context, email str
 	script := "SELECT user_id, name, email, password_hash, created_at FROM users WHERE email = ? LIMIT 1"
 	var user entity.User
 
-	// Use QueryRowContext to fetch a single record
 	err := repository.DB.QueryRowContext(ctx, script, email).Scan(
 		&user.User_Id,
 		&user.Name,

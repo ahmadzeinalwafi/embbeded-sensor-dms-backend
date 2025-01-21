@@ -8,24 +8,24 @@ import (
 )
 
 // Claims struct represents the payload of the JWT token.
-// It includes standard fields like UserId and Email,
+// As the JWT are for User and Device, then claims includes standard fields such as Id and AdditionalInfo,
 // along with the embedded RegisteredClaims struct that provides standard JWT claims.
 type Claims struct {
-	UserId string `json:"user_id"`
-	Email  string `json:"username"`
+	Id             string `json:"user_id"`
+	AdditionalInfo string `json:"username"`
 	jwt.RegisteredClaims
 }
 
-// GenerateToken generates a new JWT token for a user with a specific ID and email.
-// The token includes a payload (Claims) with user-specific information and expiration time.
+// GenerateToken generates a new JWT token for a authentication with a specific ID, Additional Info, and Expired Duration.
+// The token includes a payload (Claims) with information and expiration time.
 // The token is signed using a secret key and the HS256 signing method.
-func GenerateToken(userID string, email string) (string, error) {
+func GenerateToken(id string, additionalInfo string, expirationDuration time.Duration) (string, error) {
 	cfg := config.LoadConfig()
-	expirationTime := time.Now().Add(1 * time.Hour)
+	expirationTime := time.Now().Add(expirationDuration)
 
 	claims := &Claims{
-		UserId: userID,
-		Email:  email,
+		Id:             id,
+		AdditionalInfo: additionalInfo,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Issuer:    "device-management-system",

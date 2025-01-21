@@ -44,18 +44,50 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, createdDevice, http.StatusCreated)
 }
 
-func (h *DeviceHandler) GetUserDevices(w http.ResponseWriter, r *http.Request) {
-	userID := r.URL.Query().Get("user_id")
-	if userID == "" {
+func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.URL.Query().Get("device_id")
+	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", "Validation error: the user_id on url query are empty")
 		return
 	}
 
-	devices, err := h.DeviceService.GetUserDevices(context.Background(), userID)
+	devices, err := h.DeviceService.FindAssosiatedUserByDeviceId(context.Background(), deviceId)
 	if err != nil {
 		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error creating user: %v", err))
 		return
 	}
 
 	tools.EncodeJSONResponse(w, devices, http.StatusOK)
+}
+
+func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.URL.Query().Get("device_id")
+	if deviceId == "" {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", "Validation error: the user_id on url query are empty")
+		return
+	}
+
+	devices, err := h.DeviceService.FindInfoByDeviceId(context.Background(), deviceId)
+	if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error creating user: %v", err))
+		return
+	}
+
+	tools.EncodeJSONResponse(w, devices, http.StatusOK)
+}
+
+func (h *DeviceHandler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.URL.Query().Get("device_id")
+
+	if deviceId == "" {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")
+		return
+	}
+
+	if err := h.DeviceService.DeleteDevice(context.Background(), deviceId); err != nil {
+		http.Error(w, fmt.Sprintf("Error deleting device: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
