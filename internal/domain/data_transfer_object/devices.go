@@ -26,6 +26,10 @@ type FieldsDeviceConfig struct {
 	Fields map[string]interface{} `validate:"required"`
 }
 
+type FieldsDeviceRecords struct {
+	Fields map[string]interface{} `validate:"required"`
+}
+
 type AssosiatedUserInfo struct {
 	User_Id string
 	Email   string

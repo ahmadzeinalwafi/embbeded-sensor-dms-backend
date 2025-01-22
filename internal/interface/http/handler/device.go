@@ -67,6 +67,43 @@ func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request, ps h
 
 	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
 }
+
+func (h *DeviceHandler) CreateRecordsDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	deviceId := ps.ByName("device_id")
+	var deviceConfigFields dto.FieldsDeviceRecords
+
+	if !tools.DecodeJSONRequest(w, r, &deviceConfigFields) {
+		return
+	}
+
+	if err := h.Validator.Struct(deviceConfigFields); err != nil {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
+	deviceConfig, err := h.DeviceService.CreateRecordsDevice(context.Background(), deviceConfigFields, deviceId)
+
+	if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error creating records: %v", err))
+		return
+	}
+
+	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
+}
+
+func (h *DeviceHandler) ReadRecordsDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	deviceId := ps.ByName("device_id")
+
+	deviceConfig, err := h.DeviceService.ReadRecordsDevice(context.Background(), deviceId)
+
+	if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error reading records: %v", err))
+		return
+	}
+
+	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
+}
+
 func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	deviceId := ps.ByName("device_id")
 	if deviceId == "" {

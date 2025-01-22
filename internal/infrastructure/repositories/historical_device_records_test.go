@@ -17,7 +17,7 @@ func TestCreateMeasurementHistoricalDeviceRecordsRepository(t *testing.T) {
 	defer client.Close()
 
 	repo := NewHistoricalDeviceRecordsRepository(client, "dms_bucket", "dms_org")
-	deviceConfig := &entity.DeviceConfig{
+	deviceConfig := entity.DeviceConfig{
 		Device_Id: "device_123",
 		Fields: map[string]interface{}{
 			"temperature": "float64",
@@ -41,7 +41,7 @@ func TestWriteDataHistoricalDeviceRecordsRepository(t *testing.T) {
 
 	repo := NewHistoricalDeviceRecordsRepository(client, "dms_bucket", "dms_org")
 
-	deviceConfig := &entity.HistoricalDeviceRecords{
+	deviceConfig := entity.HistoricalDeviceRecords{
 		Device_Id: "device_123",
 		Fields: map[string]interface{}{
 			"temperature": float32(25.5),

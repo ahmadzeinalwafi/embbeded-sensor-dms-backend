@@ -29,7 +29,7 @@ func NewHistoricalDeviceRecordsRepository(client influxdb2.Client, bucket, organ
 	}
 }
 
-func (r *HistoricalDeviceRecordsRepositoryImpl) CreateMeasurement(ctx context.Context, config *entity.DeviceConfig) error {
+func (r *HistoricalDeviceRecordsRepositoryImpl) CreateMeasurement(ctx context.Context, config entity.DeviceConfig) error {
 	// Prepare initial data with the correct zero values based on the field types
 	initialFields := make(map[string]interface{})
 	for field, fieldType := range config.Fields {
@@ -57,7 +57,7 @@ func (r *HistoricalDeviceRecordsRepositoryImpl) CreateMeasurement(ctx context.Co
 	return nil
 }
 
-func (r *HistoricalDeviceRecordsRepositoryImpl) WriteData(ctx context.Context, config *entity.HistoricalDeviceRecords) error {
+func (r *HistoricalDeviceRecordsRepositoryImpl) WriteData(ctx context.Context, config entity.HistoricalDeviceRecords) error {
 	// Write data to the measurement
 	p := influxdb2.NewPoint(config.Device_Id,
 		map[string]string{"device_id": config.Device_Id},

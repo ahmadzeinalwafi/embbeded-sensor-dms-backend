@@ -15,7 +15,7 @@ func TestSensorInsert(t *testing.T) {
 
 	sensorRepo := NewDeviceConfigRepository(client, "sensor_data", "sensors")
 
-	device_config := &entity.DeviceConfig{
+	device_config := entity.DeviceConfig{
 		Device_Id: "12345",
 		Fields: map[string]interface{}{
 			"temperature_celcius": "float32",
@@ -40,7 +40,8 @@ func TestFindBySensorID(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error finding sensor: %v", err)
 	}
-	if found_device_config == nil {
+	
+	if found_device_config.Device_Id == "" {
 		t.Fatalf("Device configuration not found")
 	}
 
@@ -63,7 +64,7 @@ func TestDeleteByDeviceId(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error finding device after deletion: %v", err)
 	}
-	if deletedSensor != nil {
+	if deletedSensor.Device_Id != "" {
 		t.Fatalf("Device configuration was not deleted")
 	}
 }

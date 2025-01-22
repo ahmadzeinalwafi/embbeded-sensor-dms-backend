@@ -8,6 +8,7 @@ import (
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
 	"fmt"
+	"log"
 	"time"
 )
 
@@ -66,7 +67,7 @@ func (d *deviceContractImpl) CreateDevice(ctx context.Context, device dto.Entere
 }
 
 func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig dto.FieldsDeviceConfig, device_id string) (entity.DeviceConfig, error) {
-	entityDeviceConfig := &entity.DeviceConfig{
+	entityDeviceConfig := entity.DeviceConfig{
 		Device_Id: device_id,
 		Fields:    deviceConfig.Fields,
 	}
@@ -81,7 +82,69 @@ func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig dto.F
 		return entity.DeviceConfig{}, fmt.Errorf("error when creating device measurement: %w", err)
 	}
 
-	return *entityDeviceConfig, nil
+	return entityDeviceConfig, nil
+}
+
+func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceRecords dto.FieldsDeviceRecords, device_id string) (entity.HistoricalDeviceRecords, error) {
+	// Retrieve device configuration
+	deviceConfigInfo, err := d.deviceConfigRepo.FindByDeviceId(ctx, device_id)
+	if err != nil {
+		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error retrieving device config: %w", err)
+	}
+
+	log.Printf("config: %s", deviceConfigInfo)
+
+	// Prepare a new map for the converted fields
+	convertedFields := make(map[string]interface{})
+
+	// Iterate over the device configuration fields and perform type conversion
+	for field, fieldType := range deviceConfigInfo.Fields {
+		value, exists := deviceRecords.Fields[field]
+		if !exists {
+			return entity.HistoricalDeviceRecords{}, fmt.Errorf("field %s is missing in device records", field)
+		}
+
+		// Perform type conversion based on the field type
+		switch fieldType {
+		case "float16", "float32", "float64":
+			convertedFields[field], err = tools.ToFloat(value)
+			if err != nil {
+				return entity.HistoricalDeviceRecords{}, fmt.Errorf("error converting field %s to %s: %w", field, fieldType, err)
+			}
+		case "int8", "int16", "int32", "int64":
+			convertedFields[field], err = tools.ToInt(value)
+			if err != nil {
+				return entity.HistoricalDeviceRecords{}, fmt.Errorf("error converting field %s to %s: %w", field, fieldType, err)
+			}
+		default:
+			return entity.HistoricalDeviceRecords{}, fmt.Errorf("unsupported field type %s for field %s", fieldType, field)
+		}
+	}
+
+	// Create the entity with the converted fields
+	entityDeviceRecords := entity.HistoricalDeviceRecords{
+		Device_Id: device_id,
+		Fields:    convertedFields,
+	}
+
+	log.Printf("result: %s", convertedFields)
+
+	// Write the data to the repository
+	err = d.historicalDeviceRecordsRepo.WriteData(ctx, entityDeviceRecords)
+	if err != nil {
+		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error when creating device records: %w", err)
+	}
+
+	return entityDeviceRecords, nil
+}
+
+func (d *deviceContractImpl) ReadRecordsDevice(ctx context.Context, device_id string) ([]map[string]interface{}, error) {
+	data, err := d.historicalDeviceRecordsRepo.ReadData(ctx, device_id)
+	if err != nil {
+		return []map[string]interface{}{}, fmt.Errorf("error when reading device records: %w", err)
+	}
+
+	return data, nil
 }
 
 func (d *deviceContractImpl) FindInfoByDeviceId(ctx context.Context, device_id string) (dto.DeviceInformation, error) {
