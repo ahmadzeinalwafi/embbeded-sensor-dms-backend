@@ -3,7 +3,7 @@
 This system are created to make the development and monitoring of IoT is more easier with flexible self-hosted visualizer data based on IoT device. 
 
 ## Architecture
-This system using layered architecture in general but also adapt concept of domain driven design to make it more readable, maintainable, and structured. The following picture represent the architecture.
+This system using clean architecture in general but also adapt some concepts and terms of domain driven design to make it more readable, maintainable, structured, and easy to explain. The following picture represent the architecture.
 ![architecture.png](architecture.png)
 
 ## Configuration
