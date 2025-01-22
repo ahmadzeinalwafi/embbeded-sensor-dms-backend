@@ -7,6 +7,7 @@ import (
 	event "dms/internal/domain/events"
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
+	"strings"
 	"fmt"
 	"log"
 	"time"
@@ -67,6 +68,11 @@ func (d *deviceContractImpl) CreateDevice(ctx context.Context, device dto.Entere
 }
 
 func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig dto.FieldsDeviceConfig, device_id string) (entity.DeviceConfig, error) {
+	lowercaseFields := make(map[string]interface{})
+	for key, value := range deviceConfig.Fields {
+		lowercaseFields[strings.ToLower(key)] = value
+	}
+
 	entityDeviceConfig := entity.DeviceConfig{
 		Device_Id: device_id,
 		Fields:    deviceConfig.Fields,
@@ -87,6 +93,12 @@ func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig dto.F
 
 func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceRecords dto.FieldsDeviceRecords, device_id string) (entity.HistoricalDeviceRecords, error) {
 	// Retrieve device configuration
+	deviceRecordsLowerCase := make(map[string]interface{})
+	for key, value := range deviceRecords.Fields {
+		deviceRecordsLowerCase[strings.ToLower(key)] = value
+	}
+	deviceRecords.Fields = deviceRecordsLowerCase
+
 	deviceConfigInfo, err := d.deviceConfigRepo.FindByDeviceId(ctx, device_id)
 	if err != nil {
 		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error retrieving device config: %w", err)

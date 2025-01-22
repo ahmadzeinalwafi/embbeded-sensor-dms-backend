@@ -56,6 +56,9 @@ func main() {
 	// MQTT broker details
 	topic := "devices/data"
 	mqttConnection, err := mqtt.NewMQTTConnection("localhost:1883")
+	if err != nil {
+		panic(err)
+	}
 
 	// Prepare data to publish
 	record := entity.HistoricalDeviceRecords{
