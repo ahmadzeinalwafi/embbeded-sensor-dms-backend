@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/julienschmidt/httprouter"
 )
 
 type DeviceHandler struct {
@@ -44,8 +45,8 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, createdDevice, http.StatusCreated)
 }
 
-func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request) {
-	deviceId := r.URL.Query().Get("device_id")
+func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	deviceId := ps.ByName("device_id")
 	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", "Validation error: the user_id on url query are empty")
 		return
@@ -60,8 +61,8 @@ func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http
 	tools.EncodeJSONResponse(w, devices, http.StatusOK)
 }
 
-func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request) {
-	deviceId := r.URL.Query().Get("device_id")
+func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	deviceId := ps.ByName("device_id")
 	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", "Validation error: the user_id on url query are empty")
 		return
@@ -76,8 +77,8 @@ func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request
 	tools.EncodeJSONResponse(w, devices, http.StatusOK)
 }
 
-func (h *DeviceHandler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
-	deviceId := r.URL.Query().Get("device_id")
+func (h *DeviceHandler) DeleteDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	deviceId := ps.ByName("device_id")
 
 	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")

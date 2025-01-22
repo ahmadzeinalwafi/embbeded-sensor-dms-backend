@@ -27,7 +27,7 @@ def test_get_user():
     """Test the GET /users/info endpoint."""
     global user_id
 
-    response = requests.get(f"http://127.0.0.1:8888/users/info?user_id={user_id}")
+    response = requests.get(f"http://127.0.0.1:8888/users/{user_id}/info")
     assert response.status_code == 200
 
     response = response.json()["data"]
@@ -92,6 +92,6 @@ def test_delete_user_info():
     """Test the DELETE /users endpoint."""
     global user_id
 
-    response = requests.delete(f"http://localhost:8888/users?user_id={user_id}")
+    response = requests.delete(f"http://localhost:8888/users/{user_id}")
 
     assert response.status_code == 204

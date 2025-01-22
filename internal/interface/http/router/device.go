@@ -9,7 +9,7 @@ import (
 // AddDeviceRoutes adds device-related routes to the provided router.
 func AddDeviceRoutes(router *httprouter.Router, deviceHandler *handler.DeviceHandler) {
 	router.POST("/devices", WrapHandler(deviceHandler.CreateDevice))
-	router.GET("/devices", WrapHandler(deviceHandler.GetDeviceInfoById))
-	router.DELETE("/devices", WrapHandler(deviceHandler.DeleteDevice))
-	router.GET("/devices/user", WrapHandler(deviceHandler.GetAssosiatedUserByDevice))
+	router.GET("/devices/:device_id", WrapHandler(deviceHandler.GetDeviceInfoById))
+	router.DELETE("/devices/:device_id", WrapHandler(deviceHandler.DeleteDevice))
+	router.GET("/devices/:device_id/user", WrapHandler(deviceHandler.GetAssosiatedUserByDevice))
 }

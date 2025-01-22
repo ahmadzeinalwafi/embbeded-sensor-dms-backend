@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/julienschmidt/httprouter"
 )
 
 type UserHandler struct {
@@ -44,8 +45,8 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, createdUser, http.StatusCreated)
 }
 
-func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
-	userID := r.URL.Query().Get("user_id")
+func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	userID := ps.ByName("user_id")
 
 	if userID == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")
@@ -83,8 +84,8 @@ func (h *UserHandler) GetUserToken(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, userToken, http.StatusOK)
 }
 
-func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userID := r.URL.Query().Get("user_id")
+func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	userID := ps.ByName("user_id")
 
 	if userID == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")

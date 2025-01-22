@@ -11,8 +11,15 @@ func NewRouter() *httprouter.Router {
 	return httprouter.New()
 }
 
-func WrapHandler(handlerFunc http.HandlerFunc) httprouter.Handle {
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		handlerFunc(w, r)
+func WrapHandler(handlerFunc interface{}) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		switch h := handlerFunc.(type) {
+		case func(http.ResponseWriter, *http.Request, httprouter.Params):
+			h(w, r, ps)
+		case func(http.ResponseWriter, *http.Request):
+			h(w, r)
+		default:
+			http.Error(w, "Invalid handler function signature", http.StatusInternalServerError)
+		}
 	}
 }

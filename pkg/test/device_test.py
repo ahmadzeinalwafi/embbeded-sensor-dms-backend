@@ -51,7 +51,7 @@ def test_get_device():
     """Test the GET /devices endpoint."""
     global device_id
 
-    response = requests.get(f"http://127.0.0.1:8888/devices?device_id={device_id}")
+    response = requests.get(f"http://127.0.0.1:8888/devices/{device_id}")
     assert response.status_code == 200
 
     response = response.json()["data"]
@@ -68,7 +68,7 @@ def test_get_device_user():
     """Test the GET /devices/user endpoint."""
     global device_id
 
-    response = requests.get(f"http://127.0.0.1:8888/devices/user?device_id={device_id}")
+    response = requests.get(f"http://127.0.0.1:8888/devices/{device_id}/user")
     assert response.status_code == 200
 
     response = response.json()["data"]
@@ -81,6 +81,6 @@ def test_delete_device():
     """Test the DELETE /devices endpoint."""
     global device_id
 
-    response = requests.delete(f"http://127.0.0.1:8888/devices?device_id={device_id}")
+    response = requests.delete(f"http://127.0.0.1:8888/devices/{device_id}")
 
     assert response.status_code == 204
