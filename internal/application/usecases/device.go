@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	aggregate "dms/internal/domain/aggregates"
+	dto "dms/internal/domain/data_transfer_object"
 	entity "dms/internal/domain/entities"
 	event "dms/internal/domain/events"
 	repository "dms/internal/domain/repositories"
@@ -31,7 +31,7 @@ func NewDeviceUseCase(
 	}
 }
 
-func (d *deviceContractImpl) CreateDevice(ctx context.Context, device aggregate.EnteredDeviceInformation) (entity.Device, error) {
+func (d *deviceContractImpl) CreateDevice(ctx context.Context, device dto.EnteredDeviceInformation) (entity.Device, error) {
 	device_id := tools.GenerateShortID()
 	jwt_token, err := tools.GenerateToken(device_id, device.Name, 12*30*24*time.Hour)
 	if err != nil {
@@ -65,7 +65,7 @@ func (d *deviceContractImpl) CreateDevice(ctx context.Context, device aggregate.
 	return newDeviceEntity, nil
 }
 
-func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig aggregate.FieldsDeviceConfig, device_id string) (entity.DeviceConfig, error) {
+func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig dto.FieldsDeviceConfig, device_id string) (entity.DeviceConfig, error) {
 	entityDeviceConfig := &entity.DeviceConfig{
 		Device_Id: device_id,
 		Fields:    deviceConfig.Fields,
@@ -84,17 +84,17 @@ func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig aggre
 	return *entityDeviceConfig, nil
 }
 
-func (d *deviceContractImpl) FindInfoByDeviceId(ctx context.Context, device_id string) (aggregate.DeviceInformation, error) {
+func (d *deviceContractImpl) FindInfoByDeviceId(ctx context.Context, device_id string) (dto.DeviceInformation, error) {
 	if device_id == "" {
-		return aggregate.DeviceInformation{}, fmt.Errorf("device ID cannot be empty")
+		return dto.DeviceInformation{}, fmt.Errorf("device ID cannot be empty")
 	}
 
 	deviceEntity, err := d.deviceRepo.FindInfoByDeviceId(ctx, device_id)
 	if err != nil {
-		return aggregate.DeviceInformation{}, fmt.Errorf("error when fetching device information: %w", err)
+		return dto.DeviceInformation{}, fmt.Errorf("error when fetching device information: %w", err)
 	}
 
-	return aggregate.DeviceInformation{
+	return dto.DeviceInformation{
 		Device_Id:   deviceEntity.Device_Id,
 		Name:        deviceEntity.Name,
 		Type:        deviceEntity.Type,
@@ -107,7 +107,7 @@ func (d *deviceContractImpl) FindInfoByDeviceId(ctx context.Context, device_id s
 
 }
 
-func (d *deviceContractImpl) FindAssosiatedUserByDeviceId(ctx context.Context, device_id string) ([]aggregate.AssosiatedUserInfo, error) {
+func (d *deviceContractImpl) FindAssosiatedUserByDeviceId(ctx context.Context, device_id string) ([]dto.AssosiatedUserInfo, error) {
 	if device_id == "" {
 		return nil, fmt.Errorf("device ID cannot be empty")
 	}
@@ -117,9 +117,9 @@ func (d *deviceContractImpl) FindAssosiatedUserByDeviceId(ctx context.Context, d
 		return nil, fmt.Errorf("error when fetching associated users: %w", err)
 	}
 
-	var associatedUsers []aggregate.AssosiatedUserInfo
+	var associatedUsers []dto.AssosiatedUserInfo
 	for _, user := range users {
-		associatedUsers = append(associatedUsers, aggregate.AssosiatedUserInfo{
+		associatedUsers = append(associatedUsers, dto.AssosiatedUserInfo{
 			User_Id: user.User_Id,
 			Email:   user.Email,
 		})

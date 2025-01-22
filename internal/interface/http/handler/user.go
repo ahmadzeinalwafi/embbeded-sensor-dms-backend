@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	aggregate "dms/internal/domain/aggregates"
+	dto "dms/internal/domain/data_transfer_object"
 	event "dms/internal/domain/events"
 	tools "dms/tools"
 	"fmt"
@@ -25,7 +25,7 @@ func NewUserHandler(userService event.UserService) *UserHandler {
 }
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var userInfo aggregate.EnteredUserInformation
+	var userInfo dto.EnteredUserInformation
 
 	if !tools.DecodeJSONRequest(w, r, &userInfo) {
 		return
@@ -63,7 +63,7 @@ func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request, ps htt
 }
 
 func (h *UserHandler) GetUserToken(w http.ResponseWriter, r *http.Request) {
-	var userCredentials aggregate.UserCredential
+	var userCredentials dto.UserCredential
 
 	if !tools.DecodeJSONRequest(w, r, &userCredentials) {
 		return

@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	aggregate "dms/internal/domain/aggregates"
+	dto "dms/internal/domain/data_transfer_object"
 	entity "dms/internal/domain/entities"
 	event "dms/internal/domain/events"
 	repository "dms/internal/domain/repositories"
@@ -13,7 +13,6 @@ import (
 
 type userContractImpl struct {
 	repo repository.UserRepository
-
 }
 
 func NewUserUseCase(repo repository.UserRepository) event.UserService {
@@ -22,7 +21,7 @@ func NewUserUseCase(repo repository.UserRepository) event.UserService {
 	}
 }
 
-func (u *userContractImpl) CreateUser(ctx context.Context, user aggregate.EnteredUserInformation) (entity.User, error) {
+func (u *userContractImpl) CreateUser(ctx context.Context, user dto.EnteredUserInformation) (entity.User, error) {
 	hashed_password, err := tools.HashPassword(user.Password)
 	if err != nil {
 		panic(err)
@@ -43,17 +42,17 @@ func (u *userContractImpl) CreateUser(ctx context.Context, user aggregate.Entere
 	return newUserEntity, nil
 }
 
-func (u *userContractImpl) GetUserInfo(ctx context.Context, user_id string) (aggregate.UserInformation, error) {
+func (u *userContractImpl) GetUserInfo(ctx context.Context, user_id string) (dto.UserInformation, error) {
 	if user_id == "" {
-		return aggregate.UserInformation{}, fmt.Errorf("user ID cannot be empty")
+		return dto.UserInformation{}, fmt.Errorf("user ID cannot be empty")
 	}
 
 	userEntity, err := u.repo.FindByUserId(ctx, user_id)
 	if err != nil {
-		return aggregate.UserInformation{}, fmt.Errorf("error when fetching user information: %w", err)
+		return dto.UserInformation{}, fmt.Errorf("error when fetching user information: %w", err)
 	}
 
-	return aggregate.UserInformation{
+	return dto.UserInformation{
 		User_Id:    userEntity.User_Id,
 		Name:       userEntity.Name,
 		Email:      userEntity.Email,
@@ -61,24 +60,24 @@ func (u *userContractImpl) GetUserInfo(ctx context.Context, user_id string) (agg
 	}, nil
 }
 
-func (u *userContractImpl) GetUserToken(ctx context.Context, credential aggregate.UserCredential) (aggregate.AuthUserInformation, error) {
+func (u *userContractImpl) GetUserToken(ctx context.Context, credential dto.UserCredential) (dto.AuthUserInformation, error) {
 	userEntity, err := u.repo.FindByEmail(ctx, credential.Email)
 	if err != nil {
-		return aggregate.AuthUserInformation{}, fmt.Errorf("fetching user info: %w", err)
+		return dto.AuthUserInformation{}, fmt.Errorf("fetching user info: %w", err)
 	}
 
 	if status, err := tools.VerifyPassword(credential.Password, userEntity.Password_Hash); err != nil {
-		return aggregate.AuthUserInformation{}, fmt.Errorf("error when verify password: %w", err)
+		return dto.AuthUserInformation{}, fmt.Errorf("error when verify password: %w", err)
 	} else if !status {
-		return aggregate.AuthUserInformation{}, fmt.Errorf("wrong password")
+		return dto.AuthUserInformation{}, fmt.Errorf("wrong password")
 	}
 
-	token, err := tools.GenerateToken(userEntity.User_Id, userEntity.Email, 1 * time.Hour)
+	token, err := tools.GenerateToken(userEntity.User_Id, userEntity.Email, 1*time.Hour)
 	if err != nil {
-		return aggregate.AuthUserInformation{}, fmt.Errorf("generate token: %w", err)
+		return dto.AuthUserInformation{}, fmt.Errorf("generate token: %w", err)
 	}
 
-	return aggregate.AuthUserInformation{
+	return dto.AuthUserInformation{
 		User_Id: userEntity.User_Id,
 		Name:    userEntity.Name,
 		Email:   userEntity.Email,

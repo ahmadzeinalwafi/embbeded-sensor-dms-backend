@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	aggregate "dms/internal/domain/aggregates"
+	dto "dms/internal/domain/data_transfer_object"
 	event "dms/internal/domain/events"
 	tools "dms/tools"
 	"fmt"
@@ -25,7 +25,7 @@ func NewDeviceHandler(deviceService event.DeviceService) *DeviceHandler {
 }
 
 func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
-	var userDevice aggregate.EnteredDeviceInformation
+	var userDevice dto.EnteredDeviceInformation
 
 	if !tools.DecodeJSONRequest(w, r, &userDevice) {
 		return
@@ -47,7 +47,7 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 
 func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	deviceId := ps.ByName("device_id")
-	var deviceConfigFields aggregate.FieldsDeviceConfig
+	var deviceConfigFields dto.FieldsDeviceConfig
 
 	if !tools.DecodeJSONRequest(w, r, &deviceConfigFields) {
 		return
