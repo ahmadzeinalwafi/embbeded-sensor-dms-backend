@@ -1,33 +1,44 @@
 package main
 
 import (
-	tools "dms/tools"
-	"fmt"
+	rabbitmq "dms/internal/infrastructure/messaging/rabbitmq" // Import the rabbitmq package
 	"log"
+	"os"
 )
 
 func main() {
-	// Example usage
-	password := "supersecretpassword"
-
-	// Hash the password
-	hashedPassword, err := tools.HashPassword(password)
-	if err != nil {
-		log.Fatal(err)
+	rabbitMQConfig := rabbitmq.RabbitMQConfig{
+		DSN:      "amqp://guest:guest@localhost:5672/",
+		Exchange: "delayed_exchange",
+		Queue:    "delayed_queue",
 	}
 
-	fmt.Println("Hashed password:", hashedPassword)
-
-	// Verify the password
-	// password = "thisisthewrong password"
-	match, err := tools.VerifyPassword(password, hashedPassword)
+	rabbitMQClient, err := rabbitmq.NewRabbitMQConnection(rabbitMQConfig)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to create RabbitMQ client: %s", err)
+		os.Exit(1)
 	}
 
-	if match {
-		fmt.Println("The password matches!")
+	delayedMessageProducer := rabbitmq.NewSchedulingMessage(rabbitMQClient)
+
+	if err := rabbitMQClient.SetupExchange(); err != nil {
+		log.Fatalf("Failed to declare an exchange: %s", err)
+	}
+	if err := rabbitMQClient.SetupQueue(); err != nil {
+		log.Fatalf("Failed to declare a queue: %s", err)
+	}
+	if err := rabbitMQClient.BindQueue(); err != nil {
+		log.Fatalf("Failed to bind the queue: %s", err)
+	}
+
+	messageData := rabbitmq.MessageData{
+		DelayTime: 8,
+		Device_Id: "This is a delayed JSON message!",
+	}
+
+	if err := delayedMessageProducer.PublishMessage(messageData, 5000); err != nil {
+		log.Fatalf("Failed to publish a message: %s", err)
 	} else {
-		fmt.Println("The password does not match.")
+		log.Println("JSON message sent successfully!")
 	}
 }

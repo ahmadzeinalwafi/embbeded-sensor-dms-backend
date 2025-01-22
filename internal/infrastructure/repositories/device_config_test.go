@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	entity "dms/internal/domain/entities"
-	"dms/internal/infrastructure/database/mongodb"
+	"dms/internal/infrastructure/persistance/mongodb"
 )
 
 func TestSensorInsert(t *testing.T) {

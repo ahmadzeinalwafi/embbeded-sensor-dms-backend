@@ -2,9 +2,9 @@ package main
 
 import (
 	usecase "dms/internal/application/usecases"
-	influxdb "dms/internal/infrastructure/database/influxdb"
-	mongodb "dms/internal/infrastructure/database/mongodb"
-	MySQLConnector "dms/internal/infrastructure/database/mysql"
+	influxdb "dms/internal/infrastructure/persistance/influxdb"
+	mongodb "dms/internal/infrastructure/persistance/mongodb"
+	MySQLConnector "dms/internal/infrastructure/persistance/mysql"
 	repository "dms/internal/infrastructure/repositories"
 	"dms/internal/interface/http/handler"
 	"dms/internal/interface/http/router"

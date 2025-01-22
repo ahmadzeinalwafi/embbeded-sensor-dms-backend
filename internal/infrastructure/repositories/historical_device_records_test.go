@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	entity "dms/internal/domain/entities"
-	"dms/internal/infrastructure/database/influxdb"
+	"dms/internal/infrastructure/persistance/influxdb"
 )
 
 func TestCreateMeasurementHistoricalDeviceRecordsRepository(t *testing.T) {

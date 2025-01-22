@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	entity "dms/internal/domain/entities"
-	MySQLConnector "dms/internal/infrastructure/database/mysql"
+	MySQLConnector "dms/internal/infrastructure/persistance/mysql"
 	"fmt"
 	"testing"
 
