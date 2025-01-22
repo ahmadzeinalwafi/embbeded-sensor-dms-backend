@@ -22,6 +22,7 @@ def test_create_user():
     assert "User_Id" in response
 
     user_id = response["User_Id"]
+    return user_id
 
 def test_get_user():
     """Test the GET /users/info endpoint."""
