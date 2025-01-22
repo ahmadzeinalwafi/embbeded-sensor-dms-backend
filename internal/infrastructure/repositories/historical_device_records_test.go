@@ -17,8 +17,8 @@ func TestCreateMeasurementHistoricalDeviceRecordsRepository(t *testing.T) {
 	defer client.Close()
 
 	repo := NewHistoricalDeviceRecordsRepository(client, "dms_bucket", "dms_org")
-	deviceConfig := &entity.DeviceConfigRecords{
-		DeviceID: "device_123",
+	deviceConfig := &entity.DeviceConfig{
+		Device_Id: "device_123",
 		Fields: map[string]interface{}{
 			"temperature": "float64",
 			"humidity":    "int8",
@@ -41,8 +41,8 @@ func TestWriteDataHistoricalDeviceRecordsRepository(t *testing.T) {
 
 	repo := NewHistoricalDeviceRecordsRepository(client, "dms_bucket", "dms_org")
 
-	deviceConfig := &entity.DeviceConfigRecords{
-		DeviceID: "device_123",
+	deviceConfig := &entity.HistoricalDeviceRecords{
+		Device_Id: "device_123",
 		Fields: map[string]interface{}{
 			"temperature": float32(25.5),
 			"humidity":    int8(80),
@@ -67,15 +67,15 @@ func TestReadDataHistoricalDeviceRecordsRepository(t *testing.T) {
 
 	repo := NewHistoricalDeviceRecordsRepository(client, "dms_bucket", "dms_org")
 
-	deviceConfig := &entity.DeviceConfigRecords{
-		DeviceID: "device_123",
+	deviceConfig := &entity.HistoricalDeviceRecords{
+		Device_Id: "device_123",
 		Fields: map[string]interface{}{
 			"temperature": float32(25.5),
 			"humidity":    int8(80),
 		},
 	}
 
-	data, err := repo.ReadData(context.Background(), deviceConfig.DeviceID)
+	data, err := repo.ReadData(context.Background(), deviceConfig.Device_Id)
 	if err != nil {
 		t.Fatalf("Failed to read data: %v", err)
 	}
@@ -92,15 +92,15 @@ func TestDeleteHistoricalDeviceRecordsRepository(t *testing.T) {
 
 	repo := NewHistoricalDeviceRecordsRepository(client, "dms_bucket", "dms_org")
 
-	deviceConfig := &entity.DeviceConfigRecords{
-		DeviceID: "device_123",
+	deviceConfig := &entity.HistoricalDeviceRecords{
+		Device_Id: "device_123",
 		Fields: map[string]interface{}{
 			"temperature": float32(25.5),
 			"humidity":    int8(80),
 		},
 	}
 
-	err = repo.DeleteMeasurement(context.Background(), deviceConfig.DeviceID)
+	err = repo.DeleteMeasurement(context.Background(), deviceConfig.Device_Id)
 	if err != nil {
 		t.Fatalf("Failed to delete measurement: %v", err)
 	}

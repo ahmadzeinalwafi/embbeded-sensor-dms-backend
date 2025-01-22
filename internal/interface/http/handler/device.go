@@ -45,6 +45,28 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, createdDevice, http.StatusCreated)
 }
 
+func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	deviceId := ps.ByName("device_id")
+	var deviceConfigFields aggregate.FieldsDeviceConfig
+
+	if !tools.DecodeJSONRequest(w, r, &deviceConfigFields) {
+		return
+	}
+
+	if err := h.Validator.Struct(deviceConfigFields); err != nil {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", fmt.Sprintf("Validation error: %v", err))
+		return
+	}
+
+	deviceConfig, err := h.DeviceService.SetupDevice(context.Background(), deviceConfigFields, deviceId)
+
+	if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error creating user: %v", err))
+		return
+	}
+
+	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
+}
 func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	deviceId := ps.ByName("device_id")
 	if deviceId == "" {

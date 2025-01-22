@@ -1,6 +1,6 @@
 package entity
 
-type DeviceConfigRecords struct {
-	DeviceID string
+type HistoricalDeviceRecords struct {
+	Device_Id string
 	Fields   map[string]interface{}
 }

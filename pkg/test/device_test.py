@@ -67,6 +67,24 @@ def test_get_device():
     assert "Token" in response
     assert "Created_At" in response
 
+def test_setup_device():
+    """Test the GET /devices/:device_id/setup endpoint."""
+    global device_id
+
+    device_config = {
+        "fields": {
+                "temperature": "float64",
+        "humidity": "int8"
+        }
+    }
+
+    response = requests.post(f"http://127.0.0.1:8888/devices/{device_id}/setup", json=device_config)
+    assert response.status_code == 200
+
+    response = response.json()["data"]
+    assert response["Device_Id"] == device_id
+    assert isinstance(response["Fields"], dict)
+
 def test_get_device_user():
     """Test the GET /devices/user endpoint."""
     global device_id

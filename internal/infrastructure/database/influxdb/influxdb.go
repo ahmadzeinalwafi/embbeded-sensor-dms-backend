@@ -18,7 +18,7 @@ func InfluxDBConnector() (influxdb2.Client, error) {
 	//     return nil, errors.New("INFLUXDB_URL must be set")
 	// }
 
-	client := influxdb2.NewClient("http://localhost:8086", "Pf89iGH1BikOhQ6RFEHp2SbPHtWCdG1DbIi6KKurmP9iikaLWmC79UQ6xHm40Tuxi3RFBrj19tojkoA5bO738w==")
+	client := influxdb2.NewClient("http://localhost:8086", "QfAga1dLkl5nciEq8kmA1wqNImfi48FYNpncgYic7LSg1a-JyeR-2pmIwy_8_u_k06b2x5RmcdyzOy3H_3FSog==")
 
 	// validate client connection health
 	_, err := client.Health(context.Background())

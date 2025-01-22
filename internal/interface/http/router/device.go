@@ -12,4 +12,5 @@ func AddDeviceRoutes(router *httprouter.Router, deviceHandler *handler.DeviceHan
 	router.GET("/devices/:device_id", WrapHandler(deviceHandler.GetDeviceInfoById))
 	router.DELETE("/devices/:device_id", WrapHandler(deviceHandler.DeleteDevice))
 	router.GET("/devices/:device_id/user", WrapHandler(deviceHandler.GetAssosiatedUserByDevice))
+	router.POST("/devices/:device_id/setup", WrapHandler(deviceHandler.SetupDevice))
 }

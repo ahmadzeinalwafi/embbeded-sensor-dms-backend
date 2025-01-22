@@ -12,14 +12,22 @@ import (
 )
 
 type deviceContractImpl struct {
-	deviceRepo     repository.DeviceRepository
-	userDeviceRepo repository.UserDeviceRepository
+	deviceRepo                  repository.DeviceRepository
+	userDeviceRepo              repository.UserDeviceRepository
+	deviceConfigRepo            repository.DeviceConfigRepository
+	historicalDeviceRecordsRepo repository.HistoricalDeviceRecordsRepository
 }
 
-func NewDeviceUseCase(deviceRepo repository.DeviceRepository, userDeviceRepo repository.UserDeviceRepository) event.DeviceService {
+func NewDeviceUseCase(
+	deviceRepo repository.DeviceRepository,
+	userDeviceRepo repository.UserDeviceRepository,
+	deviceConfigRepo repository.DeviceConfigRepository,
+	historicalDeviceRecordsRepo repository.HistoricalDeviceRecordsRepository) event.DeviceService {
 	return &deviceContractImpl{
-		deviceRepo:     deviceRepo,
-		userDeviceRepo: userDeviceRepo,
+		deviceRepo:                  deviceRepo,
+		userDeviceRepo:              userDeviceRepo,
+		deviceConfigRepo:            deviceConfigRepo,
+		historicalDeviceRecordsRepo: historicalDeviceRecordsRepo,
 	}
 }
 
@@ -55,6 +63,25 @@ func (d *deviceContractImpl) CreateDevice(ctx context.Context, device aggregate.
 	}
 
 	return newDeviceEntity, nil
+}
+
+func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig aggregate.FieldsDeviceConfig, device_id string) (entity.DeviceConfig, error) {
+	entityDeviceConfig := &entity.DeviceConfig{
+		Device_Id: device_id,
+		Fields:    deviceConfig.Fields,
+	}
+
+	err := d.deviceConfigRepo.Insert(ctx, entityDeviceConfig)
+	if err != nil {
+		return entity.DeviceConfig{}, fmt.Errorf("error when creating device configuration: %w", err)
+	}
+
+	err = d.historicalDeviceRecordsRepo.CreateMeasurement(ctx, entityDeviceConfig)
+	if err != nil {
+		return entity.DeviceConfig{}, fmt.Errorf("error when creating device measurement: %w", err)
+	}
+
+	return *entityDeviceConfig, nil
 }
 
 func (d *deviceContractImpl) FindInfoByDeviceId(ctx context.Context, device_id string) (aggregate.DeviceInformation, error) {
