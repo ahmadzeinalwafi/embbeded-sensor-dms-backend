@@ -1,6 +1,6 @@
 SOFTWARE LICENSE AGREEMENT
 
-Copyright (C) [Year] [Creator's Name or Organization]. All rights reserved.
+Copyright (C) [2025] [Ahmad Zein Al Wafi]. All rights reserved.
 
 1. **Grant of License**
    This software is licensed, not sold. By downloading, installing, or using this software, you agree to the terms and conditions outlined in this License Agreement. The creator grants you a limited, non-exclusive, non-transferable, and revocable license to use the software solely for personal or internal business purposes.
@@ -35,7 +35,7 @@ Copyright (C) [Year] [Creator's Name or Organization]. All rights reserved.
 10. **Entire Agreement**
     This License Agreement constitutes the entire agreement between you and the creator concerning the software and supersedes all prior or contemporaneous agreements, communications, or understandings, whether written or oral, relating to the software.
 
-For inquiries or permissions, please contact: [Creator's Contact Information]
+For inquiries or permissions, please contact: [ahmadzeinalwafi@outlook.com]
 
 By using this software, you acknowledge that you have read, understood, and agree to be bound by the terms of this License Agreement.
 
