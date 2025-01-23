@@ -7,7 +7,6 @@ import (
 	tools "dms/tools"
 	"fmt"
 	"log"
-	"strings"
 )
 
 type MessageProcessorUseCase interface {
@@ -27,11 +26,7 @@ func NewMessageProcessorUseCase(DeviceRecordsRepo repository.HistoricalDeviceRec
 }
 
 func (m *MessageProcessor) ProcessMessage(ctx context.Context, data entity.HistoricalDeviceRecords) error {
-	deviceRecordsLowerCase := make(map[string]interface{})
-	for key, value := range data.Fields {
-		deviceRecordsLowerCase[strings.ToLower(key)] = value
-	}
-	data.Fields = deviceRecordsLowerCase
+	data.Fields = tools.ToLowerCaseKeyMap(data.Fields)
 
 	deviceConfigInfo, err := m.deviceConfigRepo.FindByDeviceId(ctx, data.Device_Id)
 	if err != nil {
@@ -40,28 +35,9 @@ func (m *MessageProcessor) ProcessMessage(ctx context.Context, data entity.Histo
 
 	log.Printf("config: %s", deviceConfigInfo)
 
-	convertedFields := make(map[string]interface{})
-
-	for field, fieldType := range deviceConfigInfo.Fields {
-		value, exists := data.Fields[field]
-		if !exists {
-			return fmt.Errorf("field %s is missing in device records", field)
-		}
-
-		switch fieldType {
-		case "float16", "float32", "float64":
-			convertedFields[field], err = tools.ToFloat(value)
-			if err != nil {
-				return fmt.Errorf("error converting field %s to %s: %w", field, fieldType, err)
-			}
-		case "int8", "int16", "int32", "int64":
-			convertedFields[field], err = tools.ToInt(value)
-			if err != nil {
-				return fmt.Errorf("error converting field %s to %s: %w", field, fieldType, err)
-			}
-		default:
-			return fmt.Errorf("unsupported field type %s for field %s", fieldType, field)
-		}
+	convertedFields, err := tools.ConvertFields(data.Fields, deviceConfigInfo.Fields)
+	if err != nil {
+		return err
 	}
 
 	entityDeviceRecords := entity.HistoricalDeviceRecords{

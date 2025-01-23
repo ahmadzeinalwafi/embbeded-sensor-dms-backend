@@ -92,12 +92,7 @@ func (d *deviceContractImpl) SetupDevice(ctx context.Context, deviceConfig dto.F
 }
 
 func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceRecords dto.FieldsDeviceRecords, device_id string) (entity.HistoricalDeviceRecords, error) {
-	// Retrieve device configuration
-	deviceRecordsLowerCase := make(map[string]interface{})
-	for key, value := range deviceRecords.Fields {
-		deviceRecordsLowerCase[strings.ToLower(key)] = value
-	}
-	deviceRecords.Fields = deviceRecordsLowerCase
+	deviceRecords.Fields = tools.ToLowerCaseKeyMap(deviceRecords.Fields)
 
 	deviceConfigInfo, err := d.deviceConfigRepo.FindByDeviceId(ctx, device_id)
 	if err != nil {
@@ -106,34 +101,11 @@ func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceReco
 
 	log.Printf("config: %s", deviceConfigInfo)
 
-	// Prepare a new map for the converted fields
-	convertedFields := make(map[string]interface{})
-
-	// Iterate over the device configuration fields and perform type conversion
-	for field, fieldType := range deviceConfigInfo.Fields {
-		value, exists := deviceRecords.Fields[field]
-		if !exists {
-			return entity.HistoricalDeviceRecords{}, fmt.Errorf("field %s is missing in device records", field)
-		}
-
-		// Perform type conversion based on the field type
-		switch fieldType {
-		case "float16", "float32", "float64":
-			convertedFields[field], err = tools.ToFloat(value)
-			if err != nil {
-				return entity.HistoricalDeviceRecords{}, fmt.Errorf("error converting field %s to %s: %w", field, fieldType, err)
-			}
-		case "int8", "int16", "int32", "int64":
-			convertedFields[field], err = tools.ToInt(value)
-			if err != nil {
-				return entity.HistoricalDeviceRecords{}, fmt.Errorf("error converting field %s to %s: %w", field, fieldType, err)
-			}
-		default:
-			return entity.HistoricalDeviceRecords{}, fmt.Errorf("unsupported field type %s for field %s", fieldType, field)
-		}
+	convertedFields, err := tools.ConvertFields(deviceRecords.Fields, deviceConfigInfo.Fields)
+	if err != nil {
+		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error when converting data type: %w", err)
 	}
 
-	// Create the entity with the converted fields
 	entityDeviceRecords := entity.HistoricalDeviceRecords{
 		Device_Id: device_id,
 		Fields:    convertedFields,
@@ -141,7 +113,6 @@ func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceReco
 
 	log.Printf("result: %s", convertedFields)
 
-	// Write the data to the repository
 	err = d.historicalDeviceRecordsRepo.WriteData(ctx, entityDeviceRecords)
 	if err != nil {
 		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error when creating device records: %w", err)
