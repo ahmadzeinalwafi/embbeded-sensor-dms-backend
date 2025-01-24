@@ -1,6 +1,5 @@
 import pytest
 import requests
-from pkg.test import user_test
 
 device_id = None
 data = {
@@ -12,11 +11,17 @@ data = {
 	"Owner": None
 }
 
+dataUser = {
+    "Name":"Alpha Zero One",
+    "Email":"alpha01@mail.com",
+    "Password":"password"
+}
+
 def test_create_device():
     """Test the POST /devices endpoint."""
     global device_id
 
-    data["Owner"] = user_test.test_create_user()
+    data["Owner"] = requests.post("http://127.0.0.1:8888/users", json=dataUser).json()["data"]["User_Id"]
 
     response = requests.post("http://127.0.0.1:8888/devices", json=data)
     assert response.status_code == 201 
@@ -131,7 +136,8 @@ def test_delete_device():
     global device_id
 
     response = requests.delete(f"http://127.0.0.1:8888/devices/{device_id}")
+    owner = str(data["Owner"])
 
-    user_test.test_delete_user_info()
+    requests.delete(f"http://localhost:8888/users/{owner}")
 
     assert response.status_code == 204
