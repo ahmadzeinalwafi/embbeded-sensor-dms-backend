@@ -7,9 +7,8 @@ import (
 	event "dms/internal/domain/events"
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
-	"strings"
 	"fmt"
-	"log"
+	"strings"
 	"time"
 )
 
@@ -99,8 +98,6 @@ func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceReco
 		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error retrieving device config: %w", err)
 	}
 
-	log.Printf("config: %s", deviceConfigInfo)
-
 	convertedFields, err := tools.ConvertFields(deviceRecords.Fields, deviceConfigInfo.Fields)
 	if err != nil {
 		return entity.HistoricalDeviceRecords{}, fmt.Errorf("error when converting data type: %w", err)
@@ -110,8 +107,6 @@ func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceReco
 		Device_Id: device_id,
 		Fields:    convertedFields,
 	}
-
-	log.Printf("result: %s", convertedFields)
 
 	err = d.historicalDeviceRecordsRepo.WriteData(ctx, entityDeviceRecords)
 	if err != nil {
