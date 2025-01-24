@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 )
@@ -27,6 +28,7 @@ func SendErrorResponse(w http.ResponseWriter, r *http.Request, status int, error
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
+	log.Printf("[ERROR] %s - %s\n", r.URL.Path, message)
 
 	if err := json.NewEncoder(w).Encode(errorResponse); err != nil {
 		http.Error(w, "Failed to encode error response", http.StatusInternalServerError)

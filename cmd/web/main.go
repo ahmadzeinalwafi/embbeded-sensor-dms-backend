@@ -1,6 +1,10 @@
 package main
 
 import (
+	"log"
+	"net/http"
+	"github.com/rs/cors"
+
 	usecase "dms/internal/application/usecases"
 	influxdb "dms/internal/infrastructure/persistance/influxdb"
 	mongodb "dms/internal/infrastructure/persistance/mongodb"
@@ -8,8 +12,6 @@ import (
 	repository "dms/internal/infrastructure/repositories"
 	"dms/internal/interface/http/handler"
 	"dms/internal/interface/http/router"
-	"log"
-	"net/http"
 )
 
 func main() {
@@ -43,9 +45,13 @@ func main() {
 	router.AddDeviceRoutes(mux, deviceHandler)
 	router.AddUserRoutes(mux, userHandler)
 
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+	}).Handler(mux)
+
 	// Start the server
 	log.Println("Server started on :8888")
-	if err := http.ListenAndServe(":8888", mux); err != nil {
+	if err := http.ListenAndServe(":8888", corsHandler); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }

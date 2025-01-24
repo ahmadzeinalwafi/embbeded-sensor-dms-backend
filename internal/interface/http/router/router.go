@@ -33,6 +33,6 @@ func WrapHandler(handlerFunc interface{}) httprouter.Handle {
 
 		// Log the request path and time spent
 		duration := time.Since(start)
-		log.Printf("%s %s\n", r.URL.Path, duration)
+		log.Printf("[INFO] %s %s\n", r.URL.Path, duration)
 	}
 }

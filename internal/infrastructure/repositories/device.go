@@ -68,7 +68,7 @@ func (repository *DeviceRepositoryImpl) FindAssosiatedUserByDeviceId(ctx context
 	script := `
 		SELECT u.user_id, u.name, u.email, u.created_at 
 		FROM users u
-		INNER JOIN user_devices du ON u.user_id = du.user_id
+		INNER JOIN users_devices du ON u.user_id = du.user_id
 		WHERE du.device_id = ?
 	`
 	rows, err := repository.DB.QueryContext(ctx, script, device_id)
