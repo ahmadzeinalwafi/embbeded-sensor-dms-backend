@@ -17,7 +17,7 @@ func NewUserDeviceRepository(db *sql.DB) repository.UserDeviceRepository {
 }
 
 func (repository *userDevicesRepositoryImpl) Insert(ctx context.Context, user_device entity.UserDevice) (entity.UserDevice, error) {
-	script := "INSERT INTO user_devices(user_id, device_id) VALUES (?,?)"
+	script := "INSERT INTO users_devices(user_id, device_id) VALUES (?,?)"
 	result, err := repository.DB.ExecContext(ctx, script, user_device.User_Id, user_device.Device_Id)
 	if err != nil {
 		return user_device, err
@@ -31,7 +31,7 @@ func (repository *userDevicesRepositoryImpl) Insert(ctx context.Context, user_de
 }
 
 func (repository *userDevicesRepositoryImpl) FindByUserId(ctx context.Context, id string) ([]entity.UserDevice, error) {
-	script := "SELECT id, created_at, user_id, device_id FROM user_devices WHERE user_id = ?"
+	script := "SELECT id, created_at, user_id, device_id FROM users_devices WHERE user_id = ?"
 	rows, err := repository.DB.QueryContext(ctx, script, id)
 	if err != nil {
 		return nil, err
@@ -39,10 +39,8 @@ func (repository *userDevicesRepositoryImpl) FindByUserId(ctx context.Context, i
 	defer rows.Close()
 
 	var userDevices []entity.UserDevice
-	// Loop through the rows and collect them into a slice
 	for rows.Next() {
 		var user_device entity.UserDevice
-		// Add error handling for rows.Scan
 		if err := rows.Scan(&user_device.Id, &user_device.Created_At, &user_device.User_Id, &user_device.Device_Id); err != nil {
 			return nil, err
 		}
@@ -57,7 +55,7 @@ func (repository *userDevicesRepositoryImpl) FindByUserId(ctx context.Context, i
 }
 
 func (repository *userDevicesRepositoryImpl) FindAll(ctx context.Context, limit int32) ([]entity.UserDevice, error) {
-	script := "SELECT id, created_at, user_id, device_id FROM user_devices LIMIT ?"
+	script := "SELECT id, created_at, user_id, device_id FROM users_devices LIMIT ?"
 	rows, err := repository.DB.QueryContext(ctx, script, limit)
 	if err != nil {
 		return nil, err
@@ -73,7 +71,7 @@ func (repository *userDevicesRepositoryImpl) FindAll(ctx context.Context, limit 
 }
 
 func (repository *userDevicesRepositoryImpl) DeleteBySensorId(ctx context.Context, id string) error {
-	script := "DELETE FROM user_devices WHERE device_id = ?"
+	script := "DELETE FROM users_devices WHERE device_id = ?"
 	_, err := repository.DB.ExecContext(ctx, script, "alpha01")
 	if err != nil {
 		return err
