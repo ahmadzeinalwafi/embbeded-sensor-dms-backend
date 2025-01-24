@@ -1,0 +1,9 @@
+CREATE TABLE user_device_links (
+    id INT NOT NULL AUTO_INCREMENT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    user_id VARCHAR(20) NOT NULL,
+    device_id VARCHAR(20) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (device_id) REFERENCES devices(device_id) ON DELETE CASCADE
+) ENGINE=InnoDB;

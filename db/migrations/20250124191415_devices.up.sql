@@ -1,0 +1,11 @@
+CREATE TABLE devices (
+    device_id VARCHAR(20) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    location VARCHAR(100) NOT NULL,
+    token VARCHAR(500) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    description VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (device_id)
+) ENGINE=InnoDB;
