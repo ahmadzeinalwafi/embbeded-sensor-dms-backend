@@ -9,6 +9,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type DeviceConfigRepositoryImpl struct {
@@ -25,10 +26,24 @@ func NewDeviceConfigRepository(client *mongo.Client, dbName, collectionName stri
 }
 
 func (r *DeviceConfigRepositoryImpl) Insert(ctx context.Context, device_config entity.DeviceConfig) error {
-	_, err := r.collection.InsertOne(ctx, device_config)
+	indexModel := mongo.IndexModel{
+		Keys:    bson.M{"device_id": 1},
+		Options: options.Index().SetUnique(true),
+	}
+
+	_, err := r.collection.Indexes().CreateOne(ctx, indexModel)
 	if err != nil {
+		return fmt.Errorf("error creating unique index for device_id: %v", err)
+	}
+
+	_, err = r.collection.InsertOne(ctx, device_config)
+	if err != nil {
+		if mongo.IsDuplicateKeyError(err) {
+			return fmt.Errorf("device with ID '%s' already exists", device_config.Device_Id)
+		}
 		return fmt.Errorf("error inserting device configuration: %v", err)
 	}
+
 	return nil
 }
 

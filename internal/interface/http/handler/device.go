@@ -38,7 +38,7 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 
 	createdDevice, err := h.DeviceService.CreateDevice(context.Background(), userDevice)
 	if err != nil {
-		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error creating device", fmt.Sprintf("Error creating user: %v", err))
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error creating device", fmt.Sprintf("Error creating device: %v", err))
 		return
 	}
 
@@ -61,7 +61,7 @@ func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request, ps h
 	deviceConfig, err := h.DeviceService.SetupDevice(context.Background(), deviceConfigFields, deviceId)
 
 	if err != nil {
-		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error creating user: %v", err))
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error setup device: %v", err))
 		return
 	}
 
