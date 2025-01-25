@@ -9,7 +9,6 @@ import (
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/julienschmidt/httprouter"
 )
 
 type DeviceHandler struct {
@@ -45,8 +44,8 @@ func (h *DeviceHandler) CreateDevice(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, createdDevice, http.StatusCreated)
 }
 
-func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	deviceId := ps.ByName("device_id")
+func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.PathValue("device_id")
 	var deviceConfigFields dto.FieldsDeviceConfig
 
 	if !tools.DecodeJSONRequest(w, r, &deviceConfigFields) {
@@ -68,8 +67,8 @@ func (h *DeviceHandler) SetupDevice(w http.ResponseWriter, r *http.Request, ps h
 	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
 }
 
-func (h *DeviceHandler) CreateRecordsDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	deviceId := ps.ByName("device_id")
+func (h *DeviceHandler) CreateRecordsDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.PathValue("device_id")
 	var deviceConfigFields dto.FieldsDeviceRecords
 
 	if !tools.DecodeJSONRequest(w, r, &deviceConfigFields) {
@@ -91,8 +90,8 @@ func (h *DeviceHandler) CreateRecordsDevice(w http.ResponseWriter, r *http.Reque
 	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
 }
 
-func (h *DeviceHandler) ReadRecordsDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	deviceId := ps.ByName("device_id")
+func (h *DeviceHandler) ReadRecordsDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.PathValue("device_id")
 
 	deviceConfig, err := h.DeviceService.ReadRecordsDevice(context.Background(), deviceId)
 
@@ -104,8 +103,9 @@ func (h *DeviceHandler) ReadRecordsDevice(w http.ResponseWriter, r *http.Request
 	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
 }
 
-func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	deviceId := ps.ByName("device_id")
+func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.PathValue("device_id")
+
 	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", "Validation error: the user_id on url query are empty")
 		return
@@ -120,8 +120,9 @@ func (h *DeviceHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http
 	tools.EncodeJSONResponse(w, devices, http.StatusOK)
 }
 
-func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	deviceId := ps.ByName("device_id")
+func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.PathValue("device_id")
+
 	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Validation failed", "Validation error: the user_id on url query are empty")
 		return
@@ -136,8 +137,8 @@ func (h *DeviceHandler) GetDeviceInfoById(w http.ResponseWriter, r *http.Request
 	tools.EncodeJSONResponse(w, devices, http.StatusOK)
 }
 
-func (h *DeviceHandler) DeleteDevice(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	deviceId := ps.ByName("device_id")
+func (h *DeviceHandler) DeleteDevice(w http.ResponseWriter, r *http.Request) {
+	deviceId := r.PathValue("device_id")
 
 	if deviceId == "" {
 		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")

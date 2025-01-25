@@ -14,7 +14,7 @@ def test_create_user():
 
     response = requests.post("http://127.0.0.1:8888/users", json=data)
     assert response.status_code == 201 
-
+    
     response = response.json()["data"]
     assert response["Name"] == data["Name"]
     assert response["Email"] == data["Email"]
@@ -28,7 +28,7 @@ def test_get_user():
     """Test the GET /users/info endpoint."""
     global user_id
 
-    response = requests.get(f"http://127.0.0.1:8888/users/{user_id}/info")
+    response = requests.get(f"http://127.0.0.1:8888/users/{user_id}")
     assert response.status_code == 200
 
     response = response.json()["data"]

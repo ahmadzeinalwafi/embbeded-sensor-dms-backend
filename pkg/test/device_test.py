@@ -62,6 +62,8 @@ def test_get_device():
     response = requests.get(f"http://127.0.0.1:8888/devices/{device_id}")
     assert response.status_code == 200
 
+    print(response.json())
+
     response = response.json()["data"]
     assert response["Name"] == data["Name"]
     assert response["Type"] == data["Type"]

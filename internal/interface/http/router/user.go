@@ -3,13 +3,12 @@ package router
 import (
 	"dms/internal/interface/http/handler"
 
-	"github.com/julienschmidt/httprouter"
+	"net/http"
 )
 
-// AddUserRoutes adds user-related routes to the provided router.
-func AddUserRoutes(router *httprouter.Router, userHandler *handler.UserHandler) {
-	router.POST("/users", WrapHandler(userHandler.CreateUser))
-	router.POST("/auth/token", WrapHandler(userHandler.GetUserToken))
-	router.GET("/users/:user_id/info", WrapHandler(userHandler.GetUserInfo))
-	router.DELETE("/users/:user_id", WrapHandler(userHandler.DeleteUser))
+func AddUserRoutes(router *http.ServeMux, userHandler *handler.UserHandler) {
+	router.HandleFunc("POST /users", WrapHandler(userHandler.CreateUser))
+	router.HandleFunc("POST /auth/token", WrapHandler(userHandler.GetUserToken))
+	router.HandleFunc("GET /users/{user_id}", WrapHandler(userHandler.GetUserInfo))
+	router.HandleFunc("DELETE /users/{user_id}", WrapHandler(userHandler.DeleteUser))
 }
