@@ -61,6 +61,23 @@ func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	tools.EncodeJSONResponse(w, userInfo, http.StatusOK)
 }
 
+func (h *UserHandler) GetAssosiatedUserByDevice(w http.ResponseWriter, r *http.Request) {
+	userID := r.PathValue("user_id")
+
+	if userID == "" {
+		tools.SendErrorResponse(w, r, http.StatusBadRequest, "Invalid Request", "User ID is required")
+		return
+	}
+
+	userInfo, err := h.UserService.FindAssosiatedDevicesByUserId(context.Background(), userID)
+	if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error get assosiated device", fmt.Sprintf("Error get assosiated device: %v", err))
+		return
+	}
+
+	tools.EncodeJSONResponse(w, userInfo, http.StatusOK)
+}
+
 func (h *UserHandler) GetUserToken(w http.ResponseWriter, r *http.Request) {
 	var userCredentials dto.UserCredential
 

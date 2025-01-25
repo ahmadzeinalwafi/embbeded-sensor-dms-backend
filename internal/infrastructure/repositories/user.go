@@ -79,6 +79,44 @@ func (repository *UserRepositoryImpl) FindByEmail(ctx context.Context, email str
 	return user, nil
 }
 
+func (repository *UserRepositoryImpl) FindAssosiatedDevicesByUserId(ctx context.Context, user_id string) ([]entity.Device, error) {
+	script := `
+		SELECT d.device_id, d.name, d.type, d.location, d.token, d.status, d.description, d.created_at
+		FROM devices d
+		INNER JOIN users_devices du ON d.device_id = du.device_id
+		WHERE du.user_id = ?
+	`
+	rows, err := repository.DB.QueryContext(ctx, script, user_id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var devices []entity.Device
+	for rows.Next() {
+		var device entity.Device
+		err := rows.Scan(
+			&device.Device_Id,
+			&device.Name,
+			&device.Type,
+			&device.Location,
+			&device.Token,
+			&device.Status,
+			&device.Description,
+			&device.Created_At,
+		)
+		if err != nil {
+			return nil, err
+		}
+		devices = append(devices, device)
+	}
+	if len(devices) == 0 {
+		return nil, nil
+	}
+
+	return devices, nil
+}
+
 func (repository *UserRepositoryImpl) DeleteById(ctx context.Context, user_id string) error {
 	script := "DELETE FROM users WHERE user_id = ?"
 	result, err := repository.DB.ExecContext(ctx, script, user_id)

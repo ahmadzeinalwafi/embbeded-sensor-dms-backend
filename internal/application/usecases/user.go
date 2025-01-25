@@ -60,6 +60,38 @@ func (u *userContractImpl) GetUserInfo(ctx context.Context, user_id string) (dto
 	}, nil
 }
 
+func (u *userContractImpl) FindAssosiatedDevicesByUserId(ctx context.Context, user_id string) ([]dto.DeviceInformation, error) {
+	if user_id == "" {
+		return nil, fmt.Errorf("user ID cannot be empty")
+	}
+
+	// devices, err := u.repo.FindAssosiatedDevicesByUserId(ctx, user_id)
+	devices, err := u.repo.FindAssosiatedDevicesByUserId(ctx, user_id)
+	if err != nil {
+		return nil, fmt.Errorf("error when fetching associated devices: %w", err)
+	}
+
+	var associatedDevices []dto.DeviceInformation
+	if devices == nil {
+		return associatedDevices, nil
+	}
+
+	for _, device := range devices {
+		associatedDevices = append(associatedDevices, dto.DeviceInformation{
+			Device_Id:   device.Device_Id,
+			Name:        device.Name,
+			Type:        device.Type,
+			Location:    device.Location,
+			Token:       device.Token,
+			Status:      device.Status,
+			Description: device.Description,
+			Created_At:  device.Created_At,
+		})
+	}
+
+	return associatedDevices, nil
+}
+
 func (u *userContractImpl) GetUserToken(ctx context.Context, credential dto.UserCredential) (dto.AuthUserInformation, error) {
 	userEntity, err := u.repo.FindByEmail(ctx, credential.Email)
 	if err != nil {

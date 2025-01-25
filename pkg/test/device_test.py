@@ -133,6 +133,21 @@ def test_get_device_user():
         assert "User_Id" in user, "Each dictionary should have a 'User_Id' key"
         assert "Email" in user, "Each dictionary should have an 'Email' key"
 
+def test_get_user_device():
+    """Test the GET /users/{user_id}/devices endpoint."""
+    global device_id
+    owner = str(data["Owner"])
+
+    response = requests.get(f"http://127.0.0.1:8888/users/{owner}/devices")
+    assert response.status_code == 200
+
+    response = response.json()["data"]
+    for user in response:
+        assert isinstance(user, dict), "Each item in Users should be a dictionary"
+        assert "Device_Id" in user, "Each dictionary should have a 'Device_Id' key"
+        assert "Name" in user, "Each dictionary should have an 'Name' key"
+        assert "Token" in user, "Each dictionary should have an 'Token' key"
+
 def test_delete_device():
     """Test the DELETE /devices endpoint."""
     global device_id
