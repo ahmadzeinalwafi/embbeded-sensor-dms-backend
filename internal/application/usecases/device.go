@@ -116,8 +116,8 @@ func (d *deviceContractImpl) CreateRecordsDevice(ctx context.Context, deviceReco
 	return entityDeviceRecords, nil
 }
 
-func (d *deviceContractImpl) ReadRecordsDevice(ctx context.Context, device_id string) ([]map[string]interface{}, error) {
-	data, err := d.historicalDeviceRecordsRepo.ReadData(ctx, device_id)
+func (device *deviceContractImpl) ReadRecordsDevice(ctx context.Context, device_id string, d int, h int, m int) ([]map[string]interface{}, error) {
+	data, err := device.historicalDeviceRecordsRepo.ReadData(ctx, device_id, d, h, m)
 	if err != nil {
 		return []map[string]interface{}{}, fmt.Errorf("error when reading device records: %w", err)
 	}

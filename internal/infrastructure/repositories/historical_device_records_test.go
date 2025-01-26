@@ -75,7 +75,7 @@ func TestReadDataHistoricalDeviceRecordsRepository(t *testing.T) {
 		},
 	}
 
-	data, err := repo.ReadData(context.Background(), deviceConfig.Device_Id)
+	data, err := repo.ReadData(context.Background(), deviceConfig.Device_Id, 0, 1, 0)
 	if err != nil {
 		t.Fatalf("Failed to read data: %v", err)
 	}

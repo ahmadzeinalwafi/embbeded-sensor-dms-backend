@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"time"
 
+	"log"
+
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 )
@@ -74,18 +76,28 @@ func (r *HistoricalDeviceRecordsRepositoryImpl) WriteData(ctx context.Context, c
 	return nil
 }
 
-func (r *HistoricalDeviceRecordsRepositoryImpl) ReadData(ctx context.Context, deviceID string) ([]map[string]interface{}, error) {
+func (r *HistoricalDeviceRecordsRepositoryImpl) ReadData(ctx context.Context, deviceID string, d int, h int, m int) ([]map[string]interface{}, error) {
+	// Calculate the duration string for the range query
+	duration := fmt.Sprintf("-%dd%dh%dm", d, h, m)
+
+	// Create the query using the calculated duration
 	query := fmt.Sprintf(`
 		from(bucket: "%s")
-		|> range(start: -30d)
+		|> range(start: %s)
 		|> filter(fn: (r) => r._measurement == "%s")
-	`, r.bucket, deviceID)
+	`, r.bucket, duration, deviceID)
 
+	log.Println(r.bucket)
+	log.Println(duration)
+	log.Println(deviceID)
+
+	// Execute the query
 	result, err := r.queryAPI.Query(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query data: %v", err)
 	}
 
+	// Collect and return the data
 	data := []map[string]interface{}{}
 	for result.Next() {
 		record := result.Record()
@@ -97,9 +109,6 @@ func (r *HistoricalDeviceRecordsRepositoryImpl) ReadData(ctx context.Context, de
 		})
 	}
 
-	if result.Err() != nil {
-		return nil, fmt.Errorf("query error: %v", result.Err())
-	}
 	return data, nil
 }
 

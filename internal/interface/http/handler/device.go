@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -90,10 +92,14 @@ func (h *DeviceHandler) CreateRecordsDevice(w http.ResponseWriter, r *http.Reque
 	tools.EncodeJSONResponse(w, deviceConfig, http.StatusOK)
 }
 
-func (h *DeviceHandler) ReadRecordsDevice(w http.ResponseWriter, r *http.Request) {
+func (device *DeviceHandler) ReadRecordsDevice(w http.ResponseWriter, r *http.Request) {
 	deviceId := r.PathValue("device_id")
+	query := r.URL.Query()
+	d, err := strconv.Atoi(query.Get("d"))
+	h, err := strconv.Atoi(query.Get("h"))
+	m, err := strconv.Atoi(query.Get("m"))
 
-	deviceConfig, err := h.DeviceService.ReadRecordsDevice(context.Background(), deviceId)
+	deviceConfig, err := device.DeviceService.ReadRecordsDevice(context.Background(), deviceId, d, h, m)
 
 	if err != nil {
 		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving devices", fmt.Sprintf("Error reading records: %v", err))
