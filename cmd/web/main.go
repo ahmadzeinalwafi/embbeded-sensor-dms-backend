@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+
 	"github.com/rs/cors"
 
 	usecase "dms/internal/application/usecases"
@@ -46,7 +47,10 @@ func main() {
 	router.AddUserRoutes(mux, userHandler)
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
+		AllowedOrigins:   []string{"*"},                                       
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, 
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},           
+		AllowCredentials: true,
 	}).Handler(mux)
 
 	// Start the server
