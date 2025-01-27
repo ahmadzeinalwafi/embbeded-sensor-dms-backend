@@ -114,7 +114,7 @@ def test_read_records_device():
     """Test the GET /devices/:device_id/records endpoint."""
     global device_id
 
-    response = requests.get(f"http://127.0.0.1:8888/devices/{device_id}/records")
+    response = requests.get(f"http://127.0.0.1:8888/devices/{device_id}/records?d=0&h=1&m=0")
     assert response.status_code == 200
 
     response = response.json()["data"]
