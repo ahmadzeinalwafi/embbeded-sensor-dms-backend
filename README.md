@@ -7,7 +7,7 @@ This system using clean architecture in general but also adapt some concepts and
 ![architecture.png](architecture.png)
 
 ## Configuration
-All configuration is in `config.env` file.
+All configuration is in `config.yml` file.
 
 ## Run Apps
 ### Run API Test
