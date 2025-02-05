@@ -18,6 +18,7 @@ python -m pytest
 ```
 go run cmd/web/main.go
 ```
-
-## Contribute
-Please contact me for contribution as there are no document guidelines for contribution yet.
+### Run MQTT Worker
+```
+go run cmd/worker/main.go
+```
