@@ -131,7 +131,7 @@ func (repository *UserRepositoryImpl) DeleteById(ctx context.Context, user_id st
 	}
 
 	if rowsAffected == 0 {
-		return errors.New("no user found with id " + user_id)
+		return fmt.Errorf("%w with id %s", tools.ErrUserNotFound, user_id)
 	}
 
 	return nil

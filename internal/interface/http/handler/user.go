@@ -62,6 +62,7 @@ func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	userInfo, err := h.UserService.GetUserInfo(context.Background(), userID)
 	if errors.Is(err, tools.ErrUserNotFound) {
 		tools.SendErrorResponse(w, r, http.StatusNotFound, "User not found", fmt.Sprintf("Error retrieving user info: %v", err))
+		return
 	} else if err != nil {
 		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving user info", fmt.Sprintf("Error retrieving user info: %v", err))
 		return
@@ -117,8 +118,13 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.UserService.DeleteUserById(context.Background(), userID); err != nil {
-		http.Error(w, fmt.Sprintf("Error deleting user: %v", err), http.StatusInternalServerError)
+	err := h.UserService.DeleteUserById(context.Background(), userID)
+
+	if errors.Is(err, tools.ErrUserNotFound) {
+		tools.SendErrorResponse(w, r, http.StatusNotFound, "User not found", fmt.Sprintf("Error retrieving user info: %v", err))
+		return
+	} else if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error deleting user", fmt.Sprintf("Error deleting user: %v", err))
 		return
 	}
 
