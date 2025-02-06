@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"net/http"
 
+	"errors"
+
 	"github.com/go-playground/validator/v10"
+	"github.com/go-sql-driver/mysql"
 )
 
 type UserHandler struct {
@@ -25,6 +28,7 @@ func NewUserHandler(userService event.UserService) *UserHandler {
 
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var userInfo dto.EnteredUserInformation
+	var mysqlErr *mysql.MySQLError
 
 	if !tools.DecodeJSONRequest(w, r, &userInfo) {
 		return
@@ -36,7 +40,10 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	createdUser, err := h.UserService.CreateUser(context.Background(), userInfo)
-	if err != nil {
+	if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+		tools.SendErrorResponse(w, r, http.StatusConflict, "Error creating user", fmt.Sprintf("Error creating user: %v", err))
+		return
+	} else if err != nil {
 		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error creating user", fmt.Sprintf("Error creating user: %v", err))
 		return
 	}

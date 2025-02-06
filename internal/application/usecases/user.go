@@ -7,8 +7,11 @@ import (
 	event "dms/internal/domain/events"
 	repository "dms/internal/domain/repositories"
 	tools "dms/tools"
+	"errors"
 	"fmt"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type userContractImpl struct {
@@ -22,6 +25,7 @@ func NewUserUseCase(repo repository.UserRepository) event.UserService {
 }
 
 func (u *userContractImpl) CreateUser(ctx context.Context, user dto.EnteredUserInformation) (entity.User, error) {
+	var mysqlErr *mysql.MySQLError
 	hashed_password, err := tools.HashPassword(user.Password)
 	if err != nil {
 		panic(err)
@@ -35,7 +39,9 @@ func (u *userContractImpl) CreateUser(ctx context.Context, user dto.EnteredUserI
 	}
 
 	_, err = u.repo.Insert(ctx, newUserEntity)
-	if err != nil {
+	if errors.As(err, &mysqlErr) && mysqlErr.Number == 1062 {
+		return entity.User{}, fmt.Errorf("duplicate entry: %w", err)
+	} else if err != nil {
 		return entity.User{}, fmt.Errorf("error when creating user: %w", err)
 	}
 
