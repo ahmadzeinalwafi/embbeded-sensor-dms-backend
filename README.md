@@ -7,7 +7,7 @@ This system using clean architecture in general but also adapt some concepts and
 ![architecture.png](architecture.png)
 
 ## Configuration
-All configuration is in `config.env` file.
+All configuration is in `config.yml` file.
 
 ## Run Apps
 ### Run API Test
@@ -18,6 +18,7 @@ python -m pytest
 ```
 go run cmd/web/main.go
 ```
-
-## Contribute
-Please contact me for contribution as there are no document guidelines for contribution yet.
+### Run MQTT Worker
+```
+go run cmd/worker/main.go
+```
