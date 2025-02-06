@@ -60,8 +60,10 @@ func (h *UserHandler) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userInfo, err := h.UserService.GetUserInfo(context.Background(), userID)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving user info: %v", err), http.StatusInternalServerError)
+	if errors.Is(err, tools.ErrUserNotFound) {
+		tools.SendErrorResponse(w, r, http.StatusNotFound, "User not found", fmt.Sprintf("Error retrieving user info: %v", err))
+	} else if err != nil {
+		tools.SendErrorResponse(w, r, http.StatusInternalServerError, "Error retrieving user info", fmt.Sprintf("Error retrieving user info: %v", err))
 		return
 	}
 

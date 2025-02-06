@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	entity "dms/internal/domain/entities"
 	repository "dms/internal/domain/repositories"
+	tools "dms/tools"
 	"errors"
 	"fmt"
 )
@@ -50,7 +51,7 @@ func (repository *UserRepositoryImpl) FindByUserId(ctx context.Context, user_id 
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return user, errors.New("no user found with id " + user_id)
+			return user, fmt.Errorf("%w with id %s", tools.ErrUserNotFound, user_id)
 		}
 		return user, err
 	}
