@@ -1,4 +1,4 @@
-CREATE TABLE user_device_links (
+CREATE TABLE users_devices (
     id INT NOT NULL AUTO_INCREMENT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     user_id VARCHAR(20) NOT NULL,
