@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	entity "dms/internal/domain/entities"
 	repository "dms/internal/domain/repositories"
-	"errors"
 )
 
 type userDevicesRepositoryImpl struct {
@@ -45,10 +44,6 @@ func (repository *userDevicesRepositoryImpl) FindByUserId(ctx context.Context, i
 			return nil, err
 		}
 		userDevices = append(userDevices, user_device)
-	}
-
-	if len(userDevices) == 0 {
-		return nil, errors.New("No devices found for user ID " + id)
 	}
 
 	return userDevices, nil

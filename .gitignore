@@ -2,3 +2,4 @@ config.env
 config.yml
 .pytest_cache
 pkg/test/__pycache__
+.git
