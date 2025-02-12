@@ -1,5 +1,10 @@
 pipeline {
-    agent { label 'docker-agent' }
+    agent {
+        docker {
+            image 'docker:24.0.7' // Uses an official Docker image
+            args '--privileged'   // Required for running Docker inside Docker
+        }
+    }
 
     environment {
         IMAGE_NAME = 'dms-be'
