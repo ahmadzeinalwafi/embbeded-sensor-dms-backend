@@ -1,36 +1,24 @@
 pipeline {
-    agent any
+    agent any  // Uses any available agent with Docker installed
 
     environment {
-        IMAGE_NAME = 'dms-be'
+        IMAGE_NAME = 'dms-be'   // Change this
         IMAGE_TAG = 'latest'
-        GHCR_USERNAME = 'ahmadzeinalwafi'
+        GHCR_USERNAME = 'ahmadzeinalwafi'  // Change this
         GHCR_REPO = "ghcr.io/${GHCR_USERNAME}/${IMAGE_NAME}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                script {
-                    checkout scm
-                }
-            }
-        }
-
-        stage('Login to GHCR') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'ghcr-token-id', variable: 'GHCR_TOKEN')]) {
-                        sh "echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USERNAME --password-stdin"
-                    }
-                }
+                checkout scm
             }
         }
 
         stage('Build Image') {
             steps {
                 script {
-                    docker.build("${GHCR_REPO}:${IMAGE_TAG}")
+                    image = docker.build("${GHCR_REPO}:${IMAGE_TAG}")
                 }
             }
         }
@@ -39,7 +27,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('https://ghcr.io', 'ghcr-token-id') {
-                        docker.image("${GHCR_REPO}:${IMAGE_TAG}").push()
+                        image.push()
                     }
                 }
             }
@@ -48,7 +36,7 @@ pipeline {
         stage('Cleanup') {
             steps {
                 script {
-                    sh "docker rmi ${GHCR_REPO}:${IMAGE_TAG} || true"
+                    docker.image("${GHCR_REPO}:${IMAGE_TAG}").remove()
                 }
             }
         }
