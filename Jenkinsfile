@@ -1,9 +1,6 @@
 pipeline {
     agent {
-        docker {
-            image 'docker:24.0.7' // Uses an official Docker image
-            args '--privileged'   // Required for running Docker inside Docker
-        }
+        any
     }
 
     environment {
