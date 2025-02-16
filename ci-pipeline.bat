@@ -4,6 +4,16 @@ set TAG=latest
 set GHCR_USERNAME=ahmadzeinalwafi
 set REPO=ghcr.io/%GHCR_USERNAME%/%IMAGE_NAME%
 
+echo Running API tests...
+cmd /c apidog run api/dms-be.apidog-cli.json -r cli
+
+if %ERRORLEVEL% NEQ 0 (
+    echo API tests failed. Exiting...
+    exit /b %ERRORLEVEL%
+) else (
+    echo API test success. Continuing to build and push image...
+)
+
 echo Building Docker image...
 docker build -t %REPO%:%TAG% .
 
