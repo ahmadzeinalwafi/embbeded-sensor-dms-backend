@@ -13,6 +13,8 @@ import (
 	repository "dms/internal/infrastructure/repositories"
 	"dms/internal/interface/http/handler"
 	"dms/internal/interface/http/router"
+
+	"github.com/hellofresh/health-go/v5"
 )
 
 func main() {
@@ -31,13 +33,26 @@ func main() {
 	deviceConfigRepository := repository.NewDeviceConfigRepository(mongo, "sensors", "configuration")
 	historicalDeviceRecordsRepository := repository.NewHistoricalDeviceRecordsRepository(influx, "dms_bucket", "dms_org")
 
+	// Initialize health check
+	healthCheckInstance, err := health.New(
+		health.WithSystemInfo(),
+		health.WithComponent(health.Component{
+			Name:    "dms-api-ahmadzeinalwafi",
+			Version: "v1",
+		}))
+	if err != nil {
+		panic(err)
+	}
+
 	// Initialize use cases
 	deviceService := usecase.NewDeviceUseCase(deviceRepository, userDeviceRepository, deviceConfigRepository, historicalDeviceRecordsRepository)
 	userService := usecase.NewUserUseCase(userRepository)
+	healthService, _ := usecase.NewHealthUseCase(healthCheckInstance)
 
 	// Initialize handlers
 	deviceHandler := handler.NewDeviceHandler(deviceService)
 	userHandler := handler.NewUserHandler(userService)
+	healthHandler := handler.NewHealthHandler(healthService)
 
 	// Setup base router
 	mux := router.NewRouter()
@@ -45,11 +60,12 @@ func main() {
 	// Add route groups
 	router.AddDeviceRoutes(mux, deviceHandler)
 	router.AddUserRoutes(mux, userHandler)
+	router.AddHealthCheckRoutes(mux, healthHandler)
 
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},                                       
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}, 
-		AllowedHeaders:   []string{"Content-Type", "Authorization"},           
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}).Handler(mux)
 
